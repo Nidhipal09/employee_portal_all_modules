@@ -16,6 +16,7 @@ public class PermanentAddressServiceImpl implements PermanentAddressService{
     private PermanentAddressRepository  permanentAddressRepo;
     @Override
     public PermanentAddress savePermanentAddress(PermanentAddress permanentAddress) {
+
         PermanentAddress addPermanentAddress = permanentAddressRepo.save(permanentAddress);
         return addPermanentAddress;
     }

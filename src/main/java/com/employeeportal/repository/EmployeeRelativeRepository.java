@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface EmployeeRelativeRepository extends JpaRepository<EmployeeRelative, Long> {
 
     Optional<EmployeeRelative> findByPrimaryDetails(PrimaryDetails primaryDetails);
+
+    Optional<EmployeeRelative> findByEmployeeRelativeId(Long employeeRelativeId);
 }

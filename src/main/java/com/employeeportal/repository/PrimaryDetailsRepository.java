@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.employeeportal.model.PrimaryDetails;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,6 +27,8 @@ public interface PrimaryDetailsRepository extends JpaRepository<PrimaryDetails,L
 
     @Query("SELECT u.password FROM PrimaryDetails u WHERE u.email = :email")
     String findPasswordByEmail(String email);
+
+    List<PrimaryDetails> findByRoleName(String roleName);
 
 
 }

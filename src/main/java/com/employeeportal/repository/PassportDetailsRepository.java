@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface PassportDetailsRepository  extends JpaRepository<PassportDetails,Long> {
     Optional<PassportDetails> findByPrimaryDetails(PrimaryDetails primaryDetails);
+
+    Optional<PassportDetails> findByPassportId(Long passportId);
 }

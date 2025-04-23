@@ -6,12 +6,14 @@ import com.employeeportal.service.WorkPermitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/work-permit")
+@CrossOrigin(origins = "*")
 public class WorkPermitController {
 
     @Autowired
@@ -34,6 +36,7 @@ public class WorkPermitController {
     }
 
     @PutMapping("/update/{workId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EMPLOYEE')")
     public ResponseEntity<WorkPermit> updateWorkPermit(@PathVariable Long workId, @RequestBody WorkPermit workPermit) {
         WorkPermit updatedWorkPermit = workPermitService.updateWorkPermit(workId, workPermit);
         return updatedWorkPermit != null ? ResponseEntity.ok(updatedWorkPermit) : ResponseEntity.notFound().build();

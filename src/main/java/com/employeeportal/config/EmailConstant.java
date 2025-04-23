@@ -15,4 +15,9 @@ public interface EmailConstant {
     // New link for password reset
     String RESET_PASSWORD_LINK = "http://localhost:3000/resetPassword";
 
+    String LEAVE_NOTIFICATION_SUBJECT = "Request For Leave Approval -" ;
+    String LEAVE_NOTIFICATION_TEMPLATE_NAME = "leave-notification.html";
+   String PREVIEW_DETAILS_SUBJECT = "kindly check my preview details";
+   String PREVIEW_DETAILS_TEMPLATE_NAME = "preview-details";
+   String PREVIEW_DETAILS_LINK ="http://localhost:3000/primary/preview/";
 }

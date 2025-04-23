@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface WorkPermitRepository extends JpaRepository<WorkPermit, Long> {
     Optional<WorkPermit> findByPrimaryDetails(PrimaryDetails primaryDetails);
+
+    Optional<WorkPermit> findByWorkId(Long workId);
 }

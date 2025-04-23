@@ -10,5 +10,7 @@ import java.util.Optional;
 @Repository
 public interface VisaStatusRepository extends JpaRepository<VisaStatus, Long> {
     Optional<VisaStatus> findByPrimaryDetails(PrimaryDetails primaryDetails);
+
+    Optional<VisaStatus> findByVisaId(Long visaId);
     // You can add custom query methods if needed
 }

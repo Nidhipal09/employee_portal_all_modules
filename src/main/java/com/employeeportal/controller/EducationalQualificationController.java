@@ -1,8 +1,10 @@
 package com.employeeportal.controller;
 
 import com.employeeportal.exception.ResourceNotFoundException;
+import com.employeeportal.model.EducationDTO;
 import com.employeeportal.model.EducationalQualification;
 import com.employeeportal.model.PrimaryDetails;
+import com.employeeportal.model.dto.EducationResponseDTO;
 import com.employeeportal.service.EducationalQualificationService;
 import com.employeeportal.service.PrimaryDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +17,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/educationalQualification")
+@CrossOrigin(origins = "*")
 public class EducationalQualificationController {
     @Autowired
     private EducationalQualificationService educationalQualificationService;
 
     @PostMapping("/save")
-    public ResponseEntity<EducationalQualification> saveEducationalQualification(@RequestBody EducationalQualification educationalQualification) {
-        EducationalQualification addeducationalQualification = educationalQualificationService.saveEducationalQualification(educationalQualification);
+    public ResponseEntity<EducationResponseDTO> saveEducationalQualification(@RequestBody EducationDTO educationalQualification) {
+        EducationResponseDTO addeducationalQualification = educationalQualificationService.saveEducationalQualification(educationalQualification);
         return new ResponseEntity<>(addeducationalQualification, HttpStatus.CREATED);
 
     }

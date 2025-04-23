@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface OtherDetailsRepository extends JpaRepository<OtherDetails,Long> {
     Optional<OtherDetails> findByPrimaryDetails(PrimaryDetails primaryDetails);
+
+    Optional<OtherDetails> findByOtherId(Long otherId);
 }

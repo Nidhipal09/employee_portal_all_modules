@@ -4,6 +4,7 @@ import com.employeeportal.exception.ResourceNotFoundException;
 import com.employeeportal.model.EmployeeDetails;
 import com.employeeportal.model.PersonalDetails;
 import com.employeeportal.model.PrimaryDetails;
+import com.employeeportal.model.dto.PersonalDetailsDTO;
 import com.employeeportal.service.EmployeeDetailsService;
 import com.employeeportal.service.PersonalDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class PersonalDetailsController {
     @Autowired
     private PersonalDetailsService personalDetailsService;
     @PostMapping("/save")
-    public ResponseEntity<PersonalDetails> savePersonalDetails(@RequestBody PersonalDetails personalDetails) {
+    public ResponseEntity<PersonalDetails> savePersonalDetails(@RequestBody PersonalDetailsDTO personalDetails) {
         PersonalDetails addPersonalDetails = personalDetailsService.savePersonalDetails(personalDetails);
         return new ResponseEntity<>(addPersonalDetails, HttpStatus.CREATED);
 

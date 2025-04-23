@@ -2,7 +2,9 @@ package com.employeeportal.controller;
 
 import com.employeeportal.exception.ResourceNotFoundException;
 import com.employeeportal.model.AddressDetails;
+import com.employeeportal.model.AddressResponseDTO;
 import com.employeeportal.model.PrimaryDetails;
+import com.employeeportal.model.dto.AddressDTO;
 import com.employeeportal.service.AddressDetailsService;
 import com.employeeportal.service.PrimaryDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +17,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/addressDetails")
+@CrossOrigin(origins = "*")
 public class AddressDetailsController {
 
     @Autowired
     private AddressDetailsService addressDetailsService;
 
     @PostMapping("/save")
-    public ResponseEntity<AddressDetails> saveAddressDetails(@RequestBody AddressDetails addressDetails) {
-        AddressDetails addaddressDetails = addressDetailsService.saveAddressDetails(addressDetails);
+    @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN','ROLE_SUPER_ADMIN')")
+    public ResponseEntity<AddressResponseDTO> saveAddressDetails(@RequestBody AddressDTO addressDetails) {
+        AddressResponseDTO addaddressDetails = addressDetailsService.saveAddressDetails(addressDetails);
         return new ResponseEntity<>(addaddressDetails, HttpStatus.CREATED);
 
     }

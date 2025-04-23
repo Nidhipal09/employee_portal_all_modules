@@ -2,6 +2,8 @@ package com.employeeportal.controller;
 
 import com.employeeportal.exception.ResourceNotFoundException;
 import com.employeeportal.model.ProfessionalReferences;
+import com.employeeportal.model.dto.ProfessionalRequestDTO;
+import com.employeeportal.model.dto.ProfessionalResponseDTO;
 import com.employeeportal.service.ProfessionalReferencesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,14 +15,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/professional")
-
+@CrossOrigin(origins = "*")
 public class ProfessionalReferencesController {
     @Autowired
     private ProfessionalReferencesService professionalReferencesService;
 
     @PostMapping("/save")
-    public ResponseEntity<ProfessionalReferences> saveProfessionalReferences(ProfessionalReferences professionalReferences) {
-        ProfessionalReferences addProfessionalRefer = professionalReferencesService.saveProfessionalReferences(professionalReferences);
+    @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN','ROLE_SUPER_ADMIN')")
+    public ResponseEntity<ProfessionalResponseDTO> saveProfessionalReferences(@RequestBody ProfessionalRequestDTO professionalReferences) {
+        ProfessionalResponseDTO addProfessionalRefer = professionalReferencesService.saveProfessionalReferences(professionalReferences);
         return new ResponseEntity<>(addProfessionalRefer, HttpStatus.CREATED);
     }
 

@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/relatives")
+@CrossOrigin(origins = "*")
 public class RelativeInfoController {
     @Autowired
     private RelativeInfoService relativeInfoService;

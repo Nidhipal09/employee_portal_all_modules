@@ -7,6 +7,7 @@ import com.employeeportal.service.VisaStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/visa-status")
+@CrossOrigin(origins = "*")
 public class VisaStatusController {
     @Autowired
     private  VisaStatusService visaStatusService;
@@ -39,6 +41,7 @@ public class VisaStatusController {
     }
 
     @PutMapping("/update/{visaId}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_EMPLOYEE')")
     public ResponseEntity<VisaStatus> updateVisaStatus(@PathVariable Long visaId, @RequestBody VisaStatus visaStatus) {
         VisaStatus updatedVisaStatus = visaStatusService.updateVisaStatusById(visaId, visaStatus);
         return new ResponseEntity<>(updatedVisaStatus, HttpStatus.OK);
@@ -48,6 +51,5 @@ public class VisaStatusController {
         VisaStatus isDeleted = visaStatusService.deleteVisaStatusById(visaId);
         return new ResponseEntity<>("data deleted", HttpStatus.OK);
     }
-
 
 }

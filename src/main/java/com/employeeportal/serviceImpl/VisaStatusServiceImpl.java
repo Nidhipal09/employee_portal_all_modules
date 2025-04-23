@@ -56,11 +56,11 @@ public class VisaStatusServiceImpl implements VisaStatusService {
         VisaStatus existingVisaStatus = existingOptional.get();
 
         // Update fields using the provided visaStatus object, but only if the value is not null or false
-        existingVisaStatus.setCitizen(visaStatus.isCitizen() != existingVisaStatus.isCitizen() ? visaStatus.isCitizen() : existingVisaStatus.isCitizen());
-        existingVisaStatus.setExpatOnGreenCard(visaStatus.isExpatOnGreenCard() != existingVisaStatus.isExpatOnGreenCard() ? visaStatus.isExpatOnGreenCard() : existingVisaStatus.isExpatOnGreenCard());
-        existingVisaStatus.setExpatOnWorkPermit(visaStatus.isExpatOnWorkPermit() != existingVisaStatus.isExpatOnWorkPermit() ? visaStatus.isExpatOnWorkPermit() : existingVisaStatus.isExpatOnWorkPermit());
-        existingVisaStatus.setExpatOnPermanentResidencyPermit(visaStatus.isExpatOnPermanentResidencyPermit() != existingVisaStatus.isExpatOnPermanentResidencyPermit() ? visaStatus.isExpatOnPermanentResidencyPermit() : existingVisaStatus.isExpatOnPermanentResidencyPermit());
-        existingVisaStatus.setAnyOtherStatus(visaStatus.isAnyOtherStatus() != existingVisaStatus.isAnyOtherStatus() ? visaStatus.isAnyOtherStatus() : existingVisaStatus.isAnyOtherStatus());
+        existingVisaStatus.setCitizen(visaStatus.getCitizen() != existingVisaStatus.getCitizen() ? visaStatus.getCitizen() : existingVisaStatus.getCitizen());
+        existingVisaStatus.setExpatOnGreenCard(visaStatus.getExpatOnGreenCard() != existingVisaStatus.getExpatOnGreenCard() ? visaStatus.getExpatOnGreenCard() : existingVisaStatus.getExpatOnGreenCard());
+        existingVisaStatus.setExpatOnWorkPermit(visaStatus.getExpatOnWorkPermit() != existingVisaStatus.getExpatOnWorkPermit() ? visaStatus.getExpatOnWorkPermit() : existingVisaStatus.getExpatOnWorkPermit());
+        existingVisaStatus.setExpatOnPermanentResidencyPermit(visaStatus.getExpatOnPermanentResidencyPermit() != existingVisaStatus.getExpatOnPermanentResidencyPermit() ? visaStatus.getExpatOnPermanentResidencyPermit() : existingVisaStatus.getExpatOnPermanentResidencyPermit());
+        existingVisaStatus.setAnyOtherStatus(visaStatus.getAnyOtherStatus() != existingVisaStatus.getAnyOtherStatus() ? visaStatus.getAnyOtherStatus() : existingVisaStatus.getAnyOtherStatus());
 
         // Save the updated entity
         visaStatusRepo.save(existingVisaStatus);

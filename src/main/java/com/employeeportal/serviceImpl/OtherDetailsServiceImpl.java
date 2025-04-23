@@ -1,10 +1,12 @@
 package com.employeeportal.serviceImpl;
 
-import com.employeeportal.model.OtherDetails;
-import com.employeeportal.model.PassportDetails;
-import com.employeeportal.model.PermanentAddress;
+import com.employeeportal.exception.BadRequestException;
+import com.employeeportal.exception.NotFoundException;
+import com.employeeportal.model.*;
+import com.employeeportal.model.dto.OtherDetailsDTO;
 import com.employeeportal.repository.OtherDetailsRepository;
 import com.employeeportal.repository.PassportDetailsRepository;
+import com.employeeportal.repository.PrimaryDetailsRepository;
 import com.employeeportal.service.OtherDetailsService;
 import com.employeeportal.service.PassportDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,25 @@ import java.util.Optional;
 public class OtherDetailsServiceImpl   implements OtherDetailsService {
     @Autowired
     private OtherDetailsRepository otherDetailsRepo;
+    @Autowired
+    private PrimaryDetailsRepository primaryDetailsRepository;
+
     @Override
-    public OtherDetails saveOtherDetails(OtherDetails otherDetails) {
-        OtherDetails addOtherDetails =otherDetailsRepo.save(otherDetails);
+    public OtherDetails saveOtherDetails(OtherDetailsDTO otherDetails) {
+        Optional<PrimaryDetails> primary = primaryDetailsRepository.findById(otherDetails.getPrimaryId());
+        if (!primary.isPresent()) {
+            throw new NotFoundException("user not found");
+        }
+        Optional<OtherDetails> otherDetailsOptional = otherDetailsRepo.findByPrimaryDetails(primary.get());
+        if (otherDetailsOptional.isPresent()) {
+            throw new BadRequestException("other details alreday exists");
+        }
+        OtherDetails other = new OtherDetails();
+        other.setDeclarationAccepted(otherDetails.getDeclarationAccepted());
+        other.setIllness(otherDetails.getIllness());
+        other.setSelfIntroduction(otherDetails.getSelfIntroduction());
+        other.setPrimaryDetails(primary.get());
+        OtherDetails addOtherDetails = otherDetailsRepo.save(other);
         return addOtherDetails;
     }
 
@@ -33,7 +51,7 @@ public class OtherDetailsServiceImpl   implements OtherDetailsService {
     @Override
     public OtherDetails getOtherDetailsById(Long otherId) {
         OtherDetails otherDetails = otherDetailsRepo.findById(otherId).orElse(null);
-        return  otherDetails;
+        return otherDetails;
     }
 
     @Override
@@ -75,7 +93,7 @@ public class OtherDetailsServiceImpl   implements OtherDetailsService {
 
     @Override
     public OtherDetails deleteOtherDetailsById(Long otherId) {
-        OtherDetails  otherDetailsDelete =  otherDetailsRepo.findById(otherId).orElse(null);
+        OtherDetails otherDetailsDelete = otherDetailsRepo.findById(otherId).orElse(null);
         if (otherDetailsDelete != null) {
             otherDetailsRepo.delete(otherDetailsDelete);
             return otherDetailsDelete;
@@ -83,5 +101,32 @@ public class OtherDetailsServiceImpl   implements OtherDetailsService {
             throw new RuntimeException("otherDetails not found with id: " + otherId);
         }
     }
+
+    @Override
+    public OtherDetails updateOtherDetails(OtherDetailsDTO otherDetails) {
+        OtherDetails existingOtherDetails = otherDetailsRepo.findById(otherDetails.getOtherId()).orElse(null);
+
+        if (existingOtherDetails != null) {
+            // Update only valid values
+            if (isValidValue(otherDetails.getIllness())) {
+                existingOtherDetails.setIllness(otherDetails.getIllness());
+            }
+
+            if (isValidValue(otherDetails.getSelfIntroduction())) {
+                existingOtherDetails.setSelfIntroduction(otherDetails.getSelfIntroduction());
+            }
+            existingOtherDetails.setDeclarationAccepted(otherDetails.getDeclarationAccepted() !=null?otherDetails.getDeclarationAccepted():existingOtherDetails.getDeclarationAccepted());
+            // Save and return updated details
+            return otherDetailsRepo.save(existingOtherDetails);
+        } else {
+            // Return null or throw an exception if not found
+            return null;
+        }
     }
+}
+
+
+
+
+
 

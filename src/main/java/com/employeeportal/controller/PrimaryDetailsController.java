@@ -58,7 +58,7 @@ public class PrimaryDetailsController {
     }
 
     @GetMapping("/primary/{primaryId}")
-    @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN','ROLE_SUPER_ADMIN')")
     public ResponseEntity<PrimaryDetails> getPrimaryDetailsById(@PathVariable("primaryId") Long  primaryId) {
         PrimaryDetails primaryDetailsById = primaryDetailsService.getPrimaryDetailsById( primaryId);
 
@@ -116,42 +116,6 @@ public ResponseEntity<?> sendEmailOtp(@RequestBody SendOtpDto email) {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
-//@PostMapping("/validate")
-////@PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN')")
-//public ResponseEntity<ResponseDTO> validateOtp(@RequestParam String email, @RequestParam String otp) {
-//    try {
-//        // Validate OTP using the service method
-//        boolean isValid = primaryDetailsService.validateOtp(email, otp);
-//        System.out.println("OTP validation result for email: " + email + " with OTP: " + otp + " is " + isValid);
-//
-//        // Prepare response based on validation result
-//        ValidateOtpTokenResponse validateResponse = new ValidateOtpTokenResponse();
-//
-//        if (isValid) {
-//            // If OTP is valid, generate JWT token
-//            validateResponse.setToken(jwtUtil.generateToken(email));
-//            ResponseDTO response = responseUtil.prepareResponseDto(validateResponse,
-//                    "OTP is Valid", HttpStatus.OK.value(), true);
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//        } else {
-//            // If OTP is invalid, return error response
-//            throw new NotFoundException();  // OTP is invalid
-//        }
-//    } catch (NotFoundException ex) {
-//        // If NotFoundException is thrown (OTP is invalid), log and return response
-//        System.out.println("OTP is invalid: " + ex.getMessage());
-//        ResponseDTO response = responseUtil.prepareResponseDto(null,
-//                "Invalid or expired OTP", HttpStatus.BAD_REQUEST.value(), false);
-//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-//    } catch (Exception ex) {
-//        // Log any other exceptions that occur
-//        System.out.println("Exception occurred: " + ex.getMessage());
-//        ResponseDTO response = responseUtil.prepareResponseDto(null,
-//                "Invalid or expired OTP", HttpStatus.BAD_REQUEST.value(), false);
-//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-//    }
-//}
-//
 
 
     @PostMapping("/resendOtp")

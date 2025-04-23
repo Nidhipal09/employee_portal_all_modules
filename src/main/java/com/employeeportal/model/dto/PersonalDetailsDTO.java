@@ -2,7 +2,7 @@ package com.employeeportal.model.dto;
 import java.time.LocalDate;
 
 public class PersonalDetailsDTO {
-
+private Long primaryId;
     private Long personalId;
     private String firstName;
     private String middleName;
@@ -178,8 +178,17 @@ public class PersonalDetailsDTO {
         return passportUrl;
     }
 
+    public Long getPrimaryId() {
+        return primaryId;
+    }
+
+    public void setPrimaryId(Long primaryId) {
+        this.primaryId = primaryId;
+    }
+
     public void setPassportUrl(String passportUrl) {
         this.passportUrl = passportUrl;
+
     }
 
     @Override

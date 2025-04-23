@@ -59,11 +59,14 @@ public class PrimaryDetails {
     @JoinColumn(name = "other_id", nullable = true)
     private OtherDetails otherDetails;
 
+    @OneToMany(mappedBy = "primaryDetails", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Leave> leave;
+
     public PrimaryDetails() {
 
     }
 
-    public PrimaryDetails(Long primaryId, String fullName, String mobileNumber, String dateOfBirth, String email, String roleName, String password, LocalDateTime createdDate, PersonalDetails personalDetails, PermanentAddress permanentAddress, CurrentAddress currentAddresses, List<AddressDetails> addressDetails, List<EducationalQualification> educationalQualifications, List<DocumentCertificates> documentCertificates, List<EmploymentHistory> employmentHistories, List<ProfessionalReferences> professionalReferences, EmployeeRelative employeeRelative, PassportDetails passportDetails, VisaStatus visaStatus, WorkPermit workPermit, OtherDetails otherDetails) {
+    public PrimaryDetails(Long primaryId, String fullName, String mobileNumber, String dateOfBirth, String email, String roleName, String password, LocalDateTime createdDate, PersonalDetails personalDetails, PermanentAddress permanentAddress, CurrentAddress currentAddresses, List<AddressDetails> addressDetails, List<EducationalQualification> educationalQualifications, List<DocumentCertificates> documentCertificates, List<EmploymentHistory> employmentHistories, List<ProfessionalReferences> professionalReferences, EmployeeRelative employeeRelative, PassportDetails passportDetails, VisaStatus visaStatus, WorkPermit workPermit, OtherDetails otherDetails,List<Leave>  leave) {
         this.primaryId = primaryId;
         this.fullName = fullName;
         this.mobileNumber = mobileNumber;
@@ -85,6 +88,7 @@ public class PrimaryDetails {
         this.visaStatus = visaStatus;
         this.workPermit = workPermit;
         this.otherDetails = otherDetails;
+        this.leave = leave;
     }
 
     public Long getPrimaryId() {
@@ -254,5 +258,15 @@ public class PrimaryDetails {
     public void setOtherDetails(OtherDetails otherDetails) {
         this.otherDetails = otherDetails;
     }
+
+    public List<Leave> getLeave() {
+        return leave;
+    }
+
+    public void setLeave(List<Leave> leave) {
+        this.leave = leave;
+    }
+
+
 }
 

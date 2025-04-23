@@ -18,8 +18,6 @@ import com.employeeportal.config.EmailConstant;
 import com.employeeportal.service.EmailService;
 import com.employeeportal.service.PrimaryDetailsService;
 
-import javax.transaction.Transactional;
-
 @Service
 public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
 
@@ -40,7 +38,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
     private final DocumentCertificatesRepository documentCertificatesRepository;
     private final EducationalQualificationRepository educationalQualificationRepository;
     private final ProfessionalReferencesRepository professionalReferencesRepository;
-    private  final EmploymentHistoryRepository employmentHistoryRepository;
+    private final EmploymentHistoryRepository employmentHistoryRepository;
     private final PassportDetailsRepository passportDetailsRepository;
     private final VisaStatusRepository visaStatusRepository;
     private final WorkPermitRepository workPermitRepository;
@@ -94,12 +92,12 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
             }
             obj.setRoleName(primaryDetails.getRoleName());
             PrimaryDetails primary = primaryDetailsRepo.save(obj);
-            if(primary.getRoleName().equalsIgnoreCase("ADMIN")){
-                emailService.sendRegistrationEmail(primary.getEmail(),primaryDetails.getPassword(),"Admin Registration Successfully","registration.html");
-            }else {
+            if (primary.getRoleName().equalsIgnoreCase("ADMIN")) {
+                emailService.sendRegistrationEmail(primary.getEmail(), primaryDetails.getPassword(), "Admin Registration Successfully", "registration.html");
+            } else {
                 emailService.sendEmail(primary.getEmail(), primary.getCreatedDate().toString(), "", EmailConstant.SIGN_UP_LINK_SUBJECT, EmailConstant.SIGN_UP_LINK_TEMPLATE_NAME);
             }
-           return primary;
+            return primary;
         } else {
             // If the email already exists, throw an exception
             //throw new NotFoundException(ApplicationConstant.EXISTS_ERROR_RESPONSE_MSG);
@@ -112,9 +110,9 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
         Optional<PrimaryDetails> obj = Optional.ofNullable(primaryDetailsRepo.findByEmail(primaryDetails.getEmail()));
         if (obj.isPresent()) {
 
-            obj.get().setFullName(primaryDetails.getFullName()==null?obj.get().getFullName():primaryDetails.getFullName());
-            obj.get().setMobileNumber(primaryDetails.getMobileNumber()==null?obj.get().getMobileNumber():primaryDetails.getMobileNumber());
-            obj.get().setDateOfBirth(primaryDetails.getDateOfBirth()==null?obj.get().getDateOfBirth():primaryDetails.getDateOfBirth());
+            obj.get().setFullName(primaryDetails.getFullName() == null ? obj.get().getFullName() : primaryDetails.getFullName());
+            obj.get().setMobileNumber(primaryDetails.getMobileNumber() == null ? obj.get().getMobileNumber() : primaryDetails.getMobileNumber());
+            obj.get().setDateOfBirth(primaryDetails.getDateOfBirth() == null ? obj.get().getDateOfBirth() : primaryDetails.getDateOfBirth());
 
             // Check if password is not null and encrypt it
             if (primaryDetails.getPassword() != null) {
@@ -123,7 +121,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
                 throw new IllegalArgumentException("Password cannot be null");
             }
 
-            obj.get().setRoleName(primaryDetails.getRoleName()==null?obj.get().getRoleName():primaryDetails.getRoleName());
+            obj.get().setRoleName(primaryDetails.getRoleName() == null ? obj.get().getRoleName() : primaryDetails.getRoleName());
 
             if (primaryDetails.getPersonalDetailsDTO() != null) {
                 obj.get().setPersonalDetails(addPersonalDetails(primaryDetails.getPersonalDetailsDTO(), obj.get()));
@@ -153,18 +151,17 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
             } else {
                 primary.setCurrentAddresses(new CurrentAddress());  // Set an empty list for current addresses
             }
-            primary.setEmployeeRelative(addEmployeeRelative(primaryDetails.getEmployeeRelatives(),obj.get()));
+            primary.setEmployeeRelative(addEmployeeRelative(primaryDetails.getEmployeeRelatives(), obj.get()));
             return primary;
-        }else{
+        } else {
             throw new NotFoundException("This email id not register please contact to admin");
         }
     }
 
 
-
     private PersonalDetails addPersonalDetails(PersonalDetailsDTO personalDetail, PrimaryDetails objs) {
         Optional<PersonalDetails> personal = personalDetailsRepository.findByPrimaryDetails(objs);
-        if(personal.isPresent()){
+        if (personal.isPresent()) {
             personalDetailsRepository.delete(personal.get());
         }
         PersonalDetails personalDetails = new PersonalDetails();
@@ -192,7 +189,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
 
     private PermanentAddress addPermanentAddress(PermanentAddressDTO permanentAddressDTO, PrimaryDetails primaryDetails) {
         Optional<PermanentAddress> permanent = permanentAddressRepository.findByPrimaryDetails(primaryDetails);
-        if(permanent.isPresent()){
+        if (permanent.isPresent()) {
             permanentAddressRepository.delete(permanent.get());
         }
         PermanentAddress permanentAddress = new PermanentAddress();
@@ -212,7 +209,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
 
     private CurrentAddress addCurrentAddresses(CurrentAddressDTO dto, PrimaryDetails primaryDetails) {
         Optional<CurrentAddress> permanent = currentAddressRepository.findByPrimaryDetails(primaryDetails);
-        if(permanent.isPresent()){
+        if (permanent.isPresent()) {
             currentAddressRepository.delete(permanent.get());
         }
         CurrentAddress address = new CurrentAddress();
@@ -234,7 +231,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
 
     private List<AddressDetails> addAddresses(PrimaryDetails obj, List<AddressDetailsDTO> addressDetails) {
         List<AddressDetails> permanent = addressDetailsRepository.findByPrimaryDetails(obj);
-        if(!permanent.isEmpty()){
+        if (!permanent.isEmpty()) {
             addressDetailsRepository.deleteAll(permanent);
         }
         List<AddressDetails> list = new ArrayList<>();
@@ -255,7 +252,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
     private List<EducationalQualification> addEducationalQualifications(List<EducationalQualificationDTO> educationalQualificationsDTO, PrimaryDetails primaryDetails) {
         List<EducationalQualification> educationalQualifications = new ArrayList<>();
         List<EducationalQualification> education = educationalQualificationRepository.findAllByPrimaryDetails(primaryDetails);
-        if(!education.isEmpty()) {
+        if (!education.isEmpty()) {
             educationalQualificationRepository.deleteAll(education);
         }
         for (EducationalQualificationDTO eduDTO : educationalQualificationsDTO) {
@@ -271,18 +268,18 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
         return educationalQualifications;
     }
 
-    private List<DocumentCertificates> addDocumentCertificate(List<DocumentDTO> documents, PrimaryDetails obj) {
+    private List<DocumentCertificates> addDocumentCertificate(List<DocumentCertificateDTO> documents, PrimaryDetails obj) {
         List<DocumentCertificates> documentCertificates = new ArrayList<>();
         List<DocumentCertificates> doc = documentCertificatesRepository.findAllByPrimaryDetails(obj);
-        if(!doc.isEmpty()) {
+        if (!doc.isEmpty()) {
             documentCertificatesRepository.deleteAll(doc);
         }
-        for (DocumentDTO dto : documents) {
+        for (DocumentCertificateDTO dto : documents) {
             DocumentCertificates document = new DocumentCertificates();
             document.setDocumentType(dto.getDocumentType());
-            document.setDegreeCertificate(dto.isDegreeCertificate());
+            document.setDegreeCertificate(dto.getDegreeCertificate());
             document.setDegreeCertificateUrl(dto.getDegreeCertificateUrl());
-            document.setPassingCertificate(dto.isPassingCertificate());
+            document.setPassingCertificate(dto.getPassingCertificate());
             document.setPassingCertificateUrl(dto.getPassingCertificateUrl());
             document.setPrimaryDetails(obj);
             documentCertificates.add(document);
@@ -292,7 +289,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
 
     private List<EmploymentHistory> addEmploymentHistory(List<EmploymentHistoryDTO> employmentHistoryDTO, PrimaryDetails primaryDetails) {
         List<EmploymentHistory> doc = employmentHistoryRepository.findAllByPrimaryDetails(primaryDetails);
-        if(!doc.isEmpty()) {
+        if (!doc.isEmpty()) {
             employmentHistoryRepository.deleteAll(doc);
         }
         List<EmploymentHistory> employmentHistories = new ArrayList<>();
@@ -320,10 +317,11 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
         }
         return employmentHistories;
     }
+
     private List<ProfessionalReferences> addProfessionalReferences(List<ProfessionalReferencesDTO> referencesDTOs, PrimaryDetails primaryDetails) {
         List<ProfessionalReferences> professionalReferences = new ArrayList<>();
         List<ProfessionalReferences> professionalRef = professionalReferencesRepository.findAllByPrimaryDetails(primaryDetails);
-        if(!professionalRef.isEmpty()) {
+        if (!professionalRef.isEmpty()) {
             professionalReferencesRepository.deleteAll(professionalRef);
         }
         for (ProfessionalReferencesDTO referenceDTO : referencesDTOs) {
@@ -338,12 +336,13 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
         }
         return professionalReferences;
     }
+
     private List<RelativeInfo> addRelativeInfo(List<RelativeInfoDTO> relativeInfoDTOs, EmployeeRelative employeeRelative) {
         List<RelativeInfo> relativeInfoList = new ArrayList<>();
-      List<RelativeInfo> relativeIn = relativeInfoRepository.findAllByEmployeeRelative(employeeRelative);
-      if(!relativeIn.isEmpty()) {
-          relativeInfoRepository.deleteAll(relativeIn);
-      }
+        List<RelativeInfo> relativeIn = relativeInfoRepository.findAllByEmployeeRelative(employeeRelative);
+        if (!relativeIn.isEmpty()) {
+            relativeInfoRepository.deleteAll(relativeIn);
+        }
         for (RelativeInfoDTO relativeInfoDTO : relativeInfoDTOs) {
             RelativeInfo relativeInfo = new RelativeInfo();
             relativeInfo.setName(relativeInfoDTO.getName());
@@ -375,46 +374,37 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
         return passportDetails;
     }
 
-    private EmployeeRelative addEmployeeRelative(EmployeeRelativeDTO employeeRelativeDTO,PrimaryDetails primaryDetails){
+    private EmployeeRelative addEmployeeRelative(EmployeeRelativeDTO employeeRelativeDTO, PrimaryDetails primaryDetails) {
         Optional<EmployeeRelative> permanent = employeeRelativeRepository.findByPrimaryDetails(primaryDetails);
-        if(permanent.isPresent()){
+        if (permanent.isPresent()) {
             employeeRelativeRepository.delete(permanent.get());
         }
         EmployeeRelative employeeRelative = new EmployeeRelative();
         employeeRelative.setHasRelative(employeeRelativeDTO.getHasRelative());
         employeeRelative.setPrimaryDetails(primaryDetails);
-   EmployeeRelative employee = employeeRelativeRepository.save(employeeRelative);
-        employeeRelative.setRelativeInfoList(addRelativeInfo(employeeRelativeDTO.getRelativeInfoDTOS(),employee));
+        EmployeeRelative employee = employeeRelativeRepository.save(employeeRelative);
+        employeeRelative.setRelativeInfoList(addRelativeInfo(employeeRelativeDTO.getRelativeInfoDTOS(), employee));
         return employee;
     }
-//    private VisaStatus addVisaStatus(VisaStatusDTO visaStatusDTO, PrimaryDetails primaryDetails) {
-//        VisaStatus visaStatus = new VisaStatus();
-//        visaStatus.setCitizen(visaStatusDTO.getis());
-//        visaStatus.setExpatOnGreenCard(visaStatusDTO.getExpatOnGreenCard());
-//        visaStatus.setExpatOnWorkPermit(visaStatusDTO.getExpatOnWorkPermit());
-//        visaStatus.setExpatOnPermanentResidencyPermit(visaStatusDTO.getExpatOnPermanentResidencyPermit());
-//        visaStatus.setAnyOtherStatus(visaStatusDTO.getAnyOtherStatus());
-//        visaStatus.setPrimaryDetails(primaryDetails);
-//        return visaStatus;
-//    }
-private VisaStatus addVisaStatus(VisaStatusDTO visaStatusDTO, PrimaryDetails primaryDetails) {
-    Optional<VisaStatus> permanent = visaStatusRepository.findByPrimaryDetails(primaryDetails);
-    if(permanent.isPresent()){
-        visaStatusRepository.delete(permanent.get());
+
+    private VisaStatus addVisaStatus(VisaStatusDTO visaStatusDTO, PrimaryDetails primaryDetails) {
+        Optional<VisaStatus> permanent = visaStatusRepository.findByPrimaryDetails(primaryDetails);
+        if (permanent.isPresent()) {
+            visaStatusRepository.delete(permanent.get());
+        }
+        VisaStatus visaStatus = new VisaStatus();
+        visaStatus.setCitizen(visaStatusDTO.getCitizen());  // Fixed method call
+        visaStatus.setExpatOnGreenCard(visaStatusDTO.getExpatOnGreenCard());
+        visaStatus.setExpatOnWorkPermit(visaStatusDTO.getExpatOnWorkPermit());
+        visaStatus.setExpatOnPermanentResidencyPermit(visaStatusDTO.getExpatOnPermanentResidencyPermit());
+        visaStatus.setAnyOtherStatus(visaStatusDTO.getAnyOtherStatus());
+        visaStatus.setPrimaryDetails(primaryDetails);
+        return visaStatus;
     }
-    VisaStatus visaStatus = new VisaStatus();
-    visaStatus.setCitizen(visaStatusDTO.isCitizen());  // Fixed method call
-    visaStatus.setExpatOnGreenCard(visaStatusDTO.isExpatOnGreenCard());
-    visaStatus.setExpatOnWorkPermit(visaStatusDTO.isExpatOnWorkPermit());
-    visaStatus.setExpatOnPermanentResidencyPermit(visaStatusDTO.isExpatOnPermanentResidencyPermit());
-    visaStatus.setAnyOtherStatus(visaStatusDTO.isAnyOtherStatus());
-    visaStatus.setPrimaryDetails(primaryDetails);
-    return visaStatus;
-}
 
     private WorkPermit addWorkPermit(WorkPermitDTO workPermitDTO, PrimaryDetails primaryDetails) {
         Optional<WorkPermit> permanent = workPermitRepository.findByPrimaryDetails(primaryDetails);
-        if(permanent.isPresent()){
+        if (permanent.isPresent()) {
             workPermitRepository.delete(permanent.get());
         }
         WorkPermit workPermit = new WorkPermit();
@@ -429,42 +419,27 @@ private VisaStatus addVisaStatus(VisaStatusDTO visaStatusDTO, PrimaryDetails pri
     }
 
 
-
     private OtherDetails addOtherDetails(OtherDetailsDTO otherDetailsDTO, PrimaryDetails primaryDetails) {
         Optional<OtherDetails> permanent = otherDetailsRepository.findByPrimaryDetails(primaryDetails);
-        if(permanent.isPresent()){
+        if (permanent.isPresent()) {
             otherDetailsRepository.delete(permanent.get());
         }
         OtherDetails otherDetails = new OtherDetails();
         otherDetails.setOtherId(otherDetailsDTO.getOtherId());
         otherDetails.setIllness(otherDetailsDTO.getIllness());
         otherDetails.setSelfIntroduction(otherDetailsDTO.getSelfIntroduction());
-        otherDetails.setDeclarationAccepted(otherDetailsDTO.isDeclarationAccepted());
+        otherDetails.setDeclarationAccepted(otherDetailsDTO.getDeclarationAccepted());
         otherDetails.setPrimaryDetails(primaryDetails);
 
         return otherDetails;
     }
 
 
-//    private EmployeeDetails addEmployeeDetails(EmployeeDetailsDTO employeeDetails, PrimaryDetails primaryDetails) {
-//        Optional<EmployeeDetails> permanent = EmployeeDetailsRepository.findByPrimaryDetails(primaryDetails);
-//        if(permanent.isPresent()){
-//            EmployeeDetailsRepository.delete(permanent.get());
-//        }
-//        EmployeeDetails obj = new EmployeeDetails();
-//        obj.setJoiningDate(employeeDetails.getJoiningDate());
-//        obj.setEmploymentType(employeeDetails.getEmploymentType());
-//        obj.setPlaceOfWork(employeeDetails.getPlaceOfWork());
-//        obj.setPrimaryDetails(primaryDetails);
-//        return obj;
-//
-//    }
-
 
 
     private Preview addPreview(PreviewDTO previewDTO, PrimaryDetails primaryDetails) {
         Optional<Preview> permanent = previewRepository.findByPrimaryDetails(primaryDetails);
-        if(permanent.isPresent()){
+        if (permanent.isPresent()) {
             previewRepository.delete(permanent.get());
         }
 
@@ -672,6 +647,54 @@ private VisaStatus addVisaStatus(VisaStatusDTO visaStatusDTO, PrimaryDetails pri
             jwtEntity.get().setValidSession(false);
             jwtRepository.saveAndFlush(jwtEntity.get());
         }
+    }
+
+    @Override
+    public PrimaryPreviewResponse getPrimaryDetails(Long primaryId) {
+        PrimaryDetails primaryDetail = primaryDetailsRepo.findById(primaryId).orElse(null);
+        PrimaryPreviewResponse primaryPreviewResponse = new PrimaryPreviewResponse();
+        primaryPreviewResponse.setPrimaryId(primaryDetail.getPrimaryId());
+        primaryPreviewResponse.setEmail(primaryDetail.getEmail());
+        primaryPreviewResponse.setFullName(primaryDetail.getFullName());
+        primaryPreviewResponse.setDateOfBirth(primaryDetail.getDateOfBirth());
+        primaryPreviewResponse.setMobileNumber(primaryDetail.getMobileNumber());
+        primaryPreviewResponse.setCreatedDate(primaryDetail.getCreatedDate());
+        primaryPreviewResponse.setAddressDetails(primaryDetail.getAddressDetails());
+        primaryPreviewResponse.setPermanentAddress(primaryDetail.getPermanentAddress());
+        primaryPreviewResponse.setCurrentAddresses(primaryDetail.getCurrentAddresses());
+        primaryPreviewResponse.setDocuments(primaryDetail.getDocumentCertificates());
+        primaryPreviewResponse.setEducationalQualifications(primaryDetail.getEducationalQualifications());
+        primaryPreviewResponse.setEmploymentHistories(primaryDetail.getEmploymentHistories());
+        primaryPreviewResponse.setProfessionalReferences(primaryDetail.getProfessionalReferences());
+        primaryPreviewResponse.setPassportDetails(primaryDetail.getPassportDetails());
+        primaryPreviewResponse.setVisaStatus(primaryDetail.getVisaStatus());
+        primaryPreviewResponse.setWorkPermit(primaryDetail.getWorkPermit());
+        primaryPreviewResponse.setEmployeeRelatives(primaryDetail.getEmployeeRelative());
+        primaryPreviewResponse.setOtherDetails(primaryDetail.getOtherDetails());
+        primaryPreviewResponse.setPersonalDetails(primaryDetail.getPersonalDetails());
+        primaryPreviewResponse.setRoleName(primaryDetail.getRoleName());
+        return primaryPreviewResponse;
+    }
+
+    @Override
+    public String sendPreviewDetailsToHR(PreviewDetailsDTO previewDetailsDTO) {
+
+        List<PrimaryDetails> primaryDetails = primaryDetailsRepo.findByRoleName("HR");
+        if (!primaryDetails.isEmpty()) {
+            for (PrimaryDetails hrEmail : primaryDetails) {
+                emailService.sendPreviewEmailToHr(
+                        hrEmail.getEmail(),
+                        previewDetailsDTO.getEmployeeSignatureUrl(),
+                        previewDetailsDTO.getSignatureDate(),
+                        previewDetailsDTO.getPlace(),
+                        EmailConstant.PREVIEW_DETAILS_SUBJECT,
+                        EmailConstant.PREVIEW_DETAILS_TEMPLATE_NAME,
+                        EmailConstant.PREVIEW_DETAILS_LINK + previewDetailsDTO.getPrimaryId()
+                );
+            }
+        }
+        return "Send Email Successfully ";
+
     }
 }
 

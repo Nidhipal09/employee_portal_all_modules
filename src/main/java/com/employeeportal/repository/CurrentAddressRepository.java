@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface CurrentAddressRepository  extends JpaRepository<CurrentAddress,Long> {
     Optional<CurrentAddress> findByPrimaryDetails(PrimaryDetails primaryDetails);
+
+    Optional<CurrentAddress> findByCurrentId(Long currentId);
 }

@@ -61,11 +61,11 @@ public class UsersController {
         Users isDeleted = usersService.deleteUsersById(usersId);
         return new ResponseEntity<>("data deleted", HttpStatus.OK);
     }
-
-    @GetMapping("/search")
+@PostMapping("/search")
     public ResponseEntity<?> searchUsers(@RequestBody SearchDTO searchDTO, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "size", defaultValue = "10") int size) {
         SearchResponseDTO usersList = usersService.searchUsers(searchDTO, page, size);
         return new ResponseEntity<>(usersList, HttpStatus.OK);
     }
 }
+
 

@@ -3,6 +3,8 @@ package com.employeeportal.controller;
 import com.employeeportal.exception.ResourceNotFoundException;
 import com.employeeportal.model.OtherDetails;
 import com.employeeportal.model.PassportDetails;
+import com.employeeportal.model.dto.OtherDetailsDTO;
+import com.employeeportal.repository.PrimaryDetailsRepository;
 import com.employeeportal.service.OtherDetailsService;
 import com.employeeportal.service.PassportDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,8 @@ public class OtherDetailsController {
     private OtherDetailsService otherDetailsService ;
 
     @PostMapping("/save")
-    public ResponseEntity<OtherDetails> saveOtherDetails(@RequestBody OtherDetails otherDetails) {
+    @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_EMPLOYEE')")
+    public ResponseEntity<OtherDetails> saveOtherDetails(@RequestBody OtherDetailsDTO otherDetails) {
         OtherDetails addOtherDetails = otherDetailsService.saveOtherDetails(otherDetails);
         return new ResponseEntity<>(addOtherDetails, HttpStatus.CREATED);
 
