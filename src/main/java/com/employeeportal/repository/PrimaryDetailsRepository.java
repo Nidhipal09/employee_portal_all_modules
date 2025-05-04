@@ -11,24 +11,26 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PrimaryDetailsRepository extends JpaRepository<PrimaryDetails,Long>{
+public interface PrimaryDetailsRepository extends JpaRepository<PrimaryDetails, Long> {
 
-  //  Employee findByEmployeeEmail(String employeeName);
+  // Employee findByEmployeeEmail(String employeeName);
 
-    @Query(value = "select primary_id,role_name from primary_details where email = ?1", nativeQuery = true)
-    GeneralResponses getIdByEmployeename(String employeeName);
-    @Query("SELECT u FROM PrimaryDetails u WHERE u.email = ?1")
-   PrimaryDetails findByEmail(String email);
-    PrimaryDetails findByMobileNumber(String mobileNumber);
-    @Query("UPDATE PrimaryDetails u SET u.password = ?2 WHERE u.email = ?1")
-    void updatePasswordByEmail(String token, String newPassword);
+  @Query(value = "select primary_id,role_name from primary_details where email = ?1", nativeQuery = true)
+  GeneralResponses getIdByEmployeename(String employeeName);
 
-    boolean existsByEmail(String email);
+  @Query("SELECT u FROM PrimaryDetails u WHERE u.email = ?1")
+  PrimaryDetails findByEmail(String email);
 
-    @Query("SELECT u.password FROM PrimaryDetails u WHERE u.email = :email")
-    String findPasswordByEmail(String email);
+  PrimaryDetails findByMobileNumber(String mobileNumber);
 
-    List<PrimaryDetails> findByRoleName(String roleName);
+  @Query("UPDATE PrimaryDetails u SET u.password = ?2 WHERE u.email = ?1")
+  void updatePasswordByEmail(String token, String newPassword);
 
+  boolean existsByEmail(String email);
+
+  @Query("SELECT u.password FROM PrimaryDetails u WHERE u.email = :email")
+  String findPasswordByEmail(String email);
+
+  List<PrimaryDetails> findByRoleName(String roleName);
 
 }

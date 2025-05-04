@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 public interface UsersRepository extends JpaRepository<Users, Long> {
     @Query(value = "select users_id,role_name from users where email = :employeeName", nativeQuery = true)
     GeneralResponses getIdByEmployeename(String employeeName);
+
     Page<Users> findAllByName(String name, PageRequest pageRequest);
 
     Page<Users> findAllByEmployeeId(Long employeeId, PageRequest pageRequest);
