@@ -2,6 +2,7 @@ package com.employeeportal.service.registration;
 
 import java.util.List;
 
+import com.employeeportal.dto.registration.EmployeeRegistrationDTO;
 import com.employeeportal.model.PrimaryDetails;
 import com.employeeportal.model.dto.PreviewDetailsDTO;
 import com.employeeportal.model.dto.PrimaryDetailsDTO;
@@ -13,7 +14,7 @@ public interface RegistrationService {
 
 	// PrimaryDetails savePrimaryDetails(PrimaryDetailsDTO primaryDetails);
 
-	// PrimaryDetails createPrimaryDetails(PrimaryDetailsDTO primaryDetails);
+	Employee createEmployee(EmployeeRegistrationDTO employeeRegistrationDTO);
 
 	// List<PrimaryDetails> getAllPrimaryDetails();
 

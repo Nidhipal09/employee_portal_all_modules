@@ -3,12 +3,14 @@ package com.employeeportal.controller.registration;
 import java.util.List;
 import java.util.Map;
 
+import com.employeeportal.dto.registration.EmployeeRegistrationDTO;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.exception.ResourceNotFoundException;
 import com.employeeportal.model.OtpResponse;
 import com.employeeportal.model.ResponseDTO;
 import com.employeeportal.model.dto.PrimaryDetailsDTO;
 import com.employeeportal.model.dto.ValidateOtpTokenResponse;
+import com.employeeportal.model.registration.Employee;
 import com.employeeportal.util.JwtUtil;
 import com.employeeportal.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ import com.employeeportal.model.dto.SendOtpDto;
 import com.employeeportal.service.registration.RegistrationService;
 
 @RestController
-@RequestMapping("/primaryDetails")
+@RequestMapping("/employee/register")
 @CrossOrigin(origins = "*")
 public class RegistrationController {
     private final ResponseUtil responseUtil;
@@ -39,50 +41,59 @@ public class RegistrationController {
 
     // @PostMapping("/save")
     // @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN','ROLE_SUPER_ADMIN')")
-    // public ResponseEntity<PrimaryDetails> savePrimaryDetails(@RequestBody PrimaryDetailsDTO primaryDetails) {
-    //     PrimaryDetails addprimaryDetails = registrationService.savePrimaryDetails(primaryDetails);
-    //     return new ResponseEntity<>(addprimaryDetails, HttpStatus.CREATED);
+    // public ResponseEntity<PrimaryDetails> savePrimaryDetails(@RequestBody
+    // PrimaryDetailsDTO primaryDetails) {
+    // PrimaryDetails addprimaryDetails =
+    // registrationService.savePrimaryDetails(primaryDetails);
+    // return new ResponseEntity<>(addprimaryDetails, HttpStatus.CREATED);
 
     // }
 
-    // @PostMapping("/create")
-    // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
-    // public ResponseEntity<PrimaryDetails> createPrimaryDetails(@RequestBody PrimaryDetailsDTO primaryDetails) {
-    //     PrimaryDetails addprimaryDetails = registrationService.createPrimaryDetails(primaryDetails);
-    //     return new ResponseEntity<>(addprimaryDetails, HttpStatus.CREATED);
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
+    public ResponseEntity<Employee> createPrimaryDetails(@RequestBody EmployeeRegistrationDTO employeeRegistrationDTO) {
+        Employee employee = registrationService.createEmployee(employeeRegistrationDTO);
+        return new ResponseEntity<>(employee, HttpStatus.CREATED);
 
-    // }
+    }
 
     // @GetMapping("/allPrimaryDetails")
     // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_EMPLOYEE')")
     // public ResponseEntity<List<PrimaryDetails>> getAllPrimaryDetails() {
-    //     List<PrimaryDetails> allPrimaryDetails = registrationService.getAllPrimaryDetails();
-    //     return new ResponseEntity<>(allPrimaryDetails, HttpStatus.OK);
+    // List<PrimaryDetails> allPrimaryDetails =
+    // registrationService.getAllPrimaryDetails();
+    // return new ResponseEntity<>(allPrimaryDetails, HttpStatus.OK);
     // }
 
     // @GetMapping("/primary/{primaryId}")
     // @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN','ROLE_SUPER_ADMIN')")
-    // public ResponseEntity<PrimaryDetails> getPrimaryDetailsById(@PathVariable("primaryId") Long primaryId) {
-    //     PrimaryDetails primaryDetailsById = registrationService.getPrimaryDetailsById(primaryId);
+    // public ResponseEntity<PrimaryDetails>
+    // getPrimaryDetailsById(@PathVariable("primaryId") Long primaryId) {
+    // PrimaryDetails primaryDetailsById =
+    // registrationService.getPrimaryDetailsById(primaryId);
 
-    //     if (primaryDetailsById == null) {
-    //         throw new ResourceNotFoundException("User not found with id " + primaryId);
-    //     }
-    //     return new ResponseEntity<>(primaryDetailsById, HttpStatus.OK);
+    // if (primaryDetailsById == null) {
+    // throw new ResourceNotFoundException("User not found with id " + primaryId);
+    // }
+    // return new ResponseEntity<>(primaryDetailsById, HttpStatus.OK);
     // }
 
     // @PutMapping("/update/{primaryId}")
-    // public ResponseEntity<PrimaryDetails> updatePrimaryDetailsById(@PathVariable("primaryId") Long primaryId,
-    //         @RequestBody PrimaryDetails primaryDetails) {
-    //     PrimaryDetails updatePrimaryDetails = registrationService.updatePrimaryDetailsById(primaryId, primaryDetails);
-    //     // return ResponseEntity.ok(updateUser);
-    //     return new ResponseEntity<>(updatePrimaryDetails, HttpStatus.OK);
+    // public ResponseEntity<PrimaryDetails>
+    // updatePrimaryDetailsById(@PathVariable("primaryId") Long primaryId,
+    // @RequestBody PrimaryDetails primaryDetails) {
+    // PrimaryDetails updatePrimaryDetails =
+    // registrationService.updatePrimaryDetailsById(primaryId, primaryDetails);
+    // // return ResponseEntity.ok(updateUser);
+    // return new ResponseEntity<>(updatePrimaryDetails, HttpStatus.OK);
     // }
 
     // @DeleteMapping("/delete/{primaryId}")
-    // public ResponseEntity<String> deletePrimaryDetailsById(@PathVariable("primaryId") Long primaryId) {
-    //     PrimaryDetails isDeleted = registrationService.deletePrimaryDetailsById(primaryId);
-    //     return new ResponseEntity<>("data deleted", HttpStatus.OK);
+    // public ResponseEntity<String>
+    // deletePrimaryDetailsById(@PathVariable("primaryId") Long primaryId) {
+    // PrimaryDetails isDeleted =
+    // registrationService.deletePrimaryDetailsById(primaryId);
+    // return new ResponseEntity<>("data deleted", HttpStatus.OK);
     // }
 
     @PostMapping("/sendOtp")

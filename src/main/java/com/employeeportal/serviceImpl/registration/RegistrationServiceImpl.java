@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.employeeportal.config.EmailConstant;
+import com.employeeportal.dto.registration.EmployeeRegistrationDTO;
 import com.employeeportal.service.EmailService;
 import com.employeeportal.service.registration.RegistrationService;
 
@@ -591,6 +592,47 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     // }
 
+    public Employee createEmployee(EmployeeRegistrationDTO employeeRegistrationDTO) {
+
+        if (!employeeRepository.existsByEmail(employeeRegistrationDTO.getEmail())) {
+            Employee employee = new Employee();
+
+            String fullName = employeeRegistrationDTO.getFullName();
+
+            String[] parts = fullName.trim().split("\\s+");
+
+            if (parts.length == 1) {
+                employee.setFirstName(parts[0]);
+            } else if (parts.length == 2) {
+                employee.setFirstName(parts[0]);
+                employee.setLastName(parts[1]);
+            } else {
+                employee.setFirstName(parts[0]);
+                employee.setLastName(parts[parts.length - 1]);
+                employee.setMiddleName(String.join(" ", Arrays.copyOfRange(parts, 1, parts.length - 1)));
+            }
+
+            employee.setEmail(employeeRegistrationDTO.getEmail());
+            employee.setMobileNumber(employeeRegistrationDTO.getMobileNo());
+            employee.setDateOfBirth(employeeRegistrationDTO.getDob());
+            employee.setCreatedDate(LocalDateTime.now());
+            employeeRepository.save(employee);
+
+            if (primary.getRoleName().equalsIgnoreCase("ADMIN")) {
+                emailService.sendRegistrationEmail(primary.getEmail(), primaryDetails.getPassword(),
+                        "Admin Registration Successfully", "registration.html");
+            } else {
+                emailService.sendEmail(primary.getEmail(), primary.getCreatedDate().toString(), "",
+                        EmailConstant.SIGN_UP_LINK_SUBJECT, EmailConstant.SIGN_UP_LINK_TEMPLATE_NAME);
+            }
+            return employee;
+        } else {
+            // If the email already exists, throw an exception
+            // throw new NotFoundException(ApplicationConstant.EXISTS_ERROR_RESPONSE_MSG);
+            throw new NotFoundException("Email already exists, kindly use a different one.");
+        }
+    }
+
     @Override
     public String sendEmailOtp(SendOtpDto sendotp) {
         Random random = new Random();
@@ -678,7 +720,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         JwtEntity jwtEntity = new JwtEntity();
         jwtEntity.setJti(token);
         jwtEntity.setValidSession(true);
-        jwtEntity.setPrimaryId(user.getPrimaryId()); // Assuming you have the user ID
+        jwtEntity.setPrimaryId(user.getEmployeeId()); // Assuming you have the user ID
         jwtRepository.save(jwtEntity);
         return token;
 
@@ -735,48 +777,48 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     // @Override
     // public PrimaryPreviewResponse getEmployee(Long primaryId) {
-    //     Employee primaryDetail = employeeRepository.findById(primaryId).orElse(null);
-    //     PrimaryPreviewResponse primaryPreviewResponse = new PrimaryPreviewResponse();
-    //     primaryPreviewResponse.setPrimaryId(primaryDetail.getPrimaryId());
-    //     primaryPreviewResponse.setEmail(primaryDetail.getEmail());
-    //     primaryPreviewResponse.setFullName(primaryDetail.getFullName());
-    //     primaryPreviewResponse.setDateOfBirth(primaryDetail.getDateOfBirth());
-    //     primaryPreviewResponse.setMobileNumber(primaryDetail.getMobileNumber());
-    //     primaryPreviewResponse.setCreatedDate(primaryDetail.getCreatedDate());
-    //     primaryPreviewResponse.setAddressDetails(primaryDetail.getAddressDetails());
-    //     primaryPreviewResponse.setPermanentAddress(primaryDetail.getPermanentAddress());
-    //     primaryPreviewResponse.setCurrentAddresses(primaryDetail.getCurrentAddresses());
-    //     primaryPreviewResponse.setDocuments(primaryDetail.getDocumentCertificates());
-    //     primaryPreviewResponse.setEducationalQualifications(primaryDetail.getEducationalQualifications());
-    //     primaryPreviewResponse.setEmploymentHistories(primaryDetail.getEmploymentHistories());
-    //     primaryPreviewResponse.setProfessionalReferences(primaryDetail.getProfessionalReferences());
-    //     primaryPreviewResponse.setPassportDetails(primaryDetail.getPassportDetails());
-    //     primaryPreviewResponse.setVisaStatus(primaryDetail.getVisaStatus());
-    //     primaryPreviewResponse.setWorkPermit(primaryDetail.getWorkPermit());
-    //     primaryPreviewResponse.setEmployeeRelatives(primaryDetail.getEmployeeRelative());
-    //     primaryPreviewResponse.setOtherDetails(primaryDetail.getOtherDetails());
-    //     primaryPreviewResponse.setPersonalDetails(primaryDetail.getPersonalDetails());
-    //     primaryPreviewResponse.setRoleName(primaryDetail.getRoleName());
-    //     return primaryPreviewResponse;
+    // Employee primaryDetail = employeeRepository.findById(primaryId).orElse(null);
+    // PrimaryPreviewResponse primaryPreviewResponse = new PrimaryPreviewResponse();
+    // primaryPreviewResponse.setPrimaryId(primaryDetail.getPrimaryId());
+    // primaryPreviewResponse.setEmail(primaryDetail.getEmail());
+    // primaryPreviewResponse.setFullName(primaryDetail.getFullName());
+    // primaryPreviewResponse.setDateOfBirth(primaryDetail.getDateOfBirth());
+    // primaryPreviewResponse.setMobileNumber(primaryDetail.getMobileNumber());
+    // primaryPreviewResponse.setCreatedDate(primaryDetail.getCreatedDate());
+    // primaryPreviewResponse.setAddressDetails(primaryDetail.getAddressDetails());
+    // primaryPreviewResponse.setPermanentAddress(primaryDetail.getPermanentAddress());
+    // primaryPreviewResponse.setCurrentAddresses(primaryDetail.getCurrentAddresses());
+    // primaryPreviewResponse.setDocuments(primaryDetail.getDocumentCertificates());
+    // primaryPreviewResponse.setEducationalQualifications(primaryDetail.getEducationalQualifications());
+    // primaryPreviewResponse.setEmploymentHistories(primaryDetail.getEmploymentHistories());
+    // primaryPreviewResponse.setProfessionalReferences(primaryDetail.getProfessionalReferences());
+    // primaryPreviewResponse.setPassportDetails(primaryDetail.getPassportDetails());
+    // primaryPreviewResponse.setVisaStatus(primaryDetail.getVisaStatus());
+    // primaryPreviewResponse.setWorkPermit(primaryDetail.getWorkPermit());
+    // primaryPreviewResponse.setEmployeeRelatives(primaryDetail.getEmployeeRelative());
+    // primaryPreviewResponse.setOtherDetails(primaryDetail.getOtherDetails());
+    // primaryPreviewResponse.setPersonalDetails(primaryDetail.getPersonalDetails());
+    // primaryPreviewResponse.setRoleName(primaryDetail.getRoleName());
+    // return primaryPreviewResponse;
     // }
 
     // @Override
     // public String sendPreviewDetailsToHR(PreviewDetailsDTO previewDetailsDTO) {
 
-    //     List<Employee> Employee = employeeRepository.findByRoleName("HR");
-    //     if (!Employee.isEmpty()) {
-    //         for (Employee hrEmail : Employee) {
-    //             emailService.sendPreviewEmailToHr(
-    //                     hrEmail.getEmail(),
-    //                     previewDetailsDTO.getEmployeeSignatureUrl(),
-    //                     previewDetailsDTO.getSignatureDate(),
-    //                     previewDetailsDTO.getPlace(),
-    //                     EmailConstant.PREVIEW_DETAILS_SUBJECT,
-    //                     EmailConstant.PREVIEW_DETAILS_TEMPLATE_NAME,
-    //                     EmailConstant.PREVIEW_DETAILS_LINK + previewDetailsDTO.getPrimaryId());
-    //         }
-    //     }
-    //     return "Send Email Successfully ";
+    // List<Employee> Employee = employeeRepository.findByRoleName("HR");
+    // if (!Employee.isEmpty()) {
+    // for (Employee hrEmail : Employee) {
+    // emailService.sendPreviewEmailToHr(
+    // hrEmail.getEmail(),
+    // previewDetailsDTO.getEmployeeSignatureUrl(),
+    // previewDetailsDTO.getSignatureDate(),
+    // previewDetailsDTO.getPlace(),
+    // EmailConstant.PREVIEW_DETAILS_SUBJECT,
+    // EmailConstant.PREVIEW_DETAILS_TEMPLATE_NAME,
+    // EmailConstant.PREVIEW_DETAILS_LINK + previewDetailsDTO.getPrimaryId());
+    // }
+    // }
+    // return "Send Email Successfully ";
 
     // }
 }

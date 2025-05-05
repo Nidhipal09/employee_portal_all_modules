@@ -4,7 +4,7 @@ import java.sql.Date;
 import lombok.Data;
 
 @Data
-public class UserRegistrationDTO {
+public class EmployeeRegistrationDTO {
 
     private String fullName;
     private String email;

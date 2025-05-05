@@ -123,7 +123,7 @@ public class LeaveServiceImpl implements LeaveService {
        getManagers.forEach(manager ->{
            ReportingManagerResponseDTO obj = new ReportingManagerResponseDTO();
            obj.setReportingManagerName(manager.getFullName());
-           obj.setReportingMangerId(manager.getPrimaryId());
+           obj.setReportingMangerId(((long)manager.getPrimaryId()));
            getManager.add(obj);
 
        });

@@ -612,7 +612,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
 
         JwtEntity jwtEntity = optionalJwtEntity.get();
 
-        PrimaryDetails user = primaryDetailsRepo.findById(jwtEntity.getPrimaryId())
+        PrimaryDetails user = primaryDetailsRepo.findById((long)jwtEntity.getPrimaryId())
                 .orElseThrow(() -> new Exception("User not found with primaryId: " + jwtEntity.getPrimaryId()));
 
         // Encode the new password
@@ -653,7 +653,7 @@ public class PrimaryDetailsServiceImpl implements PrimaryDetailsService {
     public PrimaryPreviewResponse getPrimaryDetails(Long primaryId) {
         PrimaryDetails primaryDetail = primaryDetailsRepo.findById(primaryId).orElse(null);
         PrimaryPreviewResponse primaryPreviewResponse = new PrimaryPreviewResponse();
-        primaryPreviewResponse.setPrimaryId(primaryDetail.getPrimaryId());
+        primaryPreviewResponse.setPrimaryId((long)primaryDetail.getPrimaryId());
         primaryPreviewResponse.setEmail(primaryDetail.getEmail());
         primaryPreviewResponse.setFullName(primaryDetail.getFullName());
         primaryPreviewResponse.setDateOfBirth(primaryDetail.getDateOfBirth());

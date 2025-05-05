@@ -87,7 +87,7 @@ public class JwtUtil {
         JwtEntity jwtEntity =  new JwtEntity();
         jwtEntity.setJti(jwiId);
         jwtEntity.setValidSession(true) ;
-        jwtEntity.setPrimaryId((Long) claims.get("primaryId")) ;
+        jwtEntity.setPrimaryId((int)claims.get("primaryId")) ;
         jwtRepository.saveAndFlush(jwtEntity);
 
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
