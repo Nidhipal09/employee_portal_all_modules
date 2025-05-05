@@ -1,5 +1,6 @@
 package com.employeeportal.model.onboarding;
 
+import com.employeeportal.model.registration.Employee;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 

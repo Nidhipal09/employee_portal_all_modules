@@ -1,11 +1,11 @@
-package com.employeeportal.controller;
+package com.employeeportal.controller.login;
 
 import com.employeeportal.config.ApplicationConstant;
 import com.employeeportal.model.*;
-import com.employeeportal.model.onboarding.Employee;
+import com.employeeportal.model.registration.Employee;
 import com.employeeportal.repository.UsersRepository;
-import com.employeeportal.repository.onboarding.EmployeeRepository;
-import com.employeeportal.service.onboarding.EmployeeService;
+import com.employeeportal.repository.registration.EmployeeRepository;
+import com.employeeportal.service.login.LoginService;
 import com.employeeportal.util.JwtUtil;
 import com.employeeportal.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +20,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/api/public")
 @CrossOrigin(origins = "*")
-public class AuthController {
+public class LoginController {
     private final ResponseUtil responseUtil;
     private final JwtUtil jwtUtil;
     
     private final EmployeeRepository employeeRepository;
 
     @Autowired
-    private EmployeeService employeeService;
+    private LoginService loginService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UsersRepository usersRepo;
 
     @Autowired
-    public AuthController(ResponseUtil responseUtil, JwtUtil jwtUtil, EmployeeRepository employeeRepository) {
+    public LoginController(ResponseUtil responseUtil, JwtUtil jwtUtil, EmployeeRepository employeeRepository) {
         this.responseUtil = responseUtil;
         this.jwtUtil = jwtUtil;
         this.employeeRepository = employeeRepository;
@@ -128,7 +128,7 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         try {
-            employeeService.sendPasswordResetEmail(email);
+            loginService.sendPasswordResetEmail(email);
             return ResponseEntity.ok("Password reset email sent successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -138,7 +138,7 @@ public class AuthController {
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
         try {
-            employeeService.resetPassword(token, newPassword);
+            loginService.resetPassword(token, newPassword);
             return ResponseEntity.ok("Password reset successfully.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -151,7 +151,7 @@ public class AuthController {
 
         try {
             String jwtToken = token.substring(7);
-            employeeService.tokenLogout(jwtToken);
+            loginService.tokenLogout(jwtToken);
             ResponseDTO response = responseUtil.prepareResponseDto(null,
                     ApplicationConstant.LOGOUT_RESPONSE,
                     HttpStatus.OK.value(), true);

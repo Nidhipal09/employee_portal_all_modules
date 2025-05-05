@@ -2,6 +2,7 @@ package com.employeeportal.model.onboarding;
 
 import javax.persistence.*;
 
+import com.employeeportal.model.registration.Employee;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;

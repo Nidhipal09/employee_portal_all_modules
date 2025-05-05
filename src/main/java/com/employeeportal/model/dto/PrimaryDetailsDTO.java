@@ -33,7 +33,15 @@ public class PrimaryDetailsDTO {
     public PrimaryDetailsDTO() {
     }
 
-    public PrimaryDetailsDTO(String fullName, String mobileNumber, String dateOfBirth, String email, String roleName, String password, LocalDateTime createdDate, PersonalDetailsDTO personalDetailsDTO, List<AddressDetailsDTO> addressDetails, List<EducationalQualificationDTO> educationalQualifications, List<DocumentCertificateDTO> documents, List<EmploymentHistoryDTO> employmentHistories, OtherDetailsDTO otherDetails, CurrentAddressDTO currentAddresses, PermanentAddressDTO permanentAddress, PreviewDTO preview, List<ProfessionalReferencesDTO> professionalReferences, PassportDetailsDTO passportDetails, EmployeeRelativeDTO employeeRelatives, List<RelativeInfoDTO> relativeInfos, VisaStatusDTO visaStatus, WorkPermitDTO workPermit, EmployeeDetailsDTO employeeDetails) {
+    public PrimaryDetailsDTO(String fullName, String mobileNumber, String dateOfBirth, String email, String roleName,
+            String password, LocalDateTime createdDate, PersonalDetailsDTO personalDetailsDTO,
+            List<AddressDetailsDTO> addressDetails, List<EducationalQualificationDTO> educationalQualifications,
+            List<DocumentCertificateDTO> documents, List<EmploymentHistoryDTO> employmentHistories,
+            OtherDetailsDTO otherDetails, CurrentAddressDTO currentAddresses, PermanentAddressDTO permanentAddress,
+            PreviewDTO preview, List<ProfessionalReferencesDTO> professionalReferences,
+            PassportDetailsDTO passportDetails, EmployeeRelativeDTO employeeRelatives,
+            List<RelativeInfoDTO> relativeInfos, VisaStatusDTO visaStatus, WorkPermitDTO workPermit,
+            EmployeeDetailsDTO employeeDetails) {
         this.fullName = fullName;
         this.mobileNumber = mobileNumber;
         this.dateOfBirth = dateOfBirth;

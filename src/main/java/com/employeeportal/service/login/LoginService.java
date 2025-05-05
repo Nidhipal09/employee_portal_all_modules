@@ -1,4 +1,4 @@
-package com.employeeportal.service.onboarding;
+package com.employeeportal.service.login;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import com.employeeportal.model.dto.PrimaryDetailsDTO;
 import com.employeeportal.model.dto.PrimaryPreviewResponse;
 import com.employeeportal.model.dto.SendOtpDto;
 
-public interface EmployeeService {
+public interface LoginService {
 
 	void sendPasswordResetEmail(String email) throws Exception;
 

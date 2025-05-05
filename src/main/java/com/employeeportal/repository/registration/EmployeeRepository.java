@@ -1,4 +1,4 @@
-package com.employeeportal.repository.onboarding;
+package com.employeeportal.repository.registration;
 
 import com.employeeportal.model.GeneralResponses;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.employeeportal.model.PrimaryDetails;
-import com.employeeportal.model.onboarding.Employee;
+import com.employeeportal.model.registration.Employee;
 
 import java.util.List;
 import java.util.Optional;

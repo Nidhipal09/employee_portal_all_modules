@@ -1,4 +1,4 @@
-package com.employeeportal.serviceImpl.onboarding;
+package com.employeeportal.serviceImpl.login;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -7,9 +7,9 @@ import java.util.concurrent.TimeUnit;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.model.*;
 import com.employeeportal.model.dto.*;
-import com.employeeportal.model.onboarding.Employee;
+import com.employeeportal.model.registration.Employee;
 import com.employeeportal.repository.*;
-import com.employeeportal.repository.onboarding.EmployeeRepository;
+import com.employeeportal.repository.registration.EmployeeRepository;
 import com.employeeportal.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +19,10 @@ import org.springframework.stereotype.Service;
 import com.employeeportal.config.EmailConstant;
 import com.employeeportal.service.EmailService;
 import com.employeeportal.service.PrimaryDetailsService;
-import com.employeeportal.service.onboarding.EmployeeService;
+import com.employeeportal.service.login.LoginService;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class LoginServiceImpl implements LoginService {
 
     private final EmployeeRepository employeeRepository;
 
@@ -53,7 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private static final long OTP_EXPIRATION_TIME = 2; // 2 minutes
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, JwtRepository jwtRepository,
+    public LoginServiceImpl(EmployeeRepository employeeRepository, JwtRepository jwtRepository,
             JwtUtil jwtUtil, EmailService emailService, EmployeeRelativeRepository employeeRelativeRepository,
             PersonalDetailsRepository personalDetailsRepository, PermanentAddressRepository permanentAddressRepository,
             CurrentAddressRepository currentAddressRepository, AddressDetailsRepository addressDetailsRepository,

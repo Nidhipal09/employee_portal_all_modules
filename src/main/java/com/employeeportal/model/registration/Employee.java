@@ -1,8 +1,20 @@
-package com.employeeportal.model.onboarding;
+package com.employeeportal.model.registration;
 
 import lombok.Data;
 
 import javax.persistence.*;
+
+import com.employeeportal.model.onboarding.Address;
+import com.employeeportal.model.onboarding.Education;
+import com.employeeportal.model.onboarding.EmployeeOrganizationDetails;
+import com.employeeportal.model.onboarding.EmploymentHistory;
+import com.employeeportal.model.onboarding.IdentificationDetails;
+import com.employeeportal.model.onboarding.OtherDetails;
+import com.employeeportal.model.onboarding.PassportDetails;
+import com.employeeportal.model.onboarding.PersonalDetails;
+import com.employeeportal.model.onboarding.ProfessionalReferences;
+import com.employeeportal.model.onboarding.Relatives;
+import com.employeeportal.model.onboarding.VisaDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;

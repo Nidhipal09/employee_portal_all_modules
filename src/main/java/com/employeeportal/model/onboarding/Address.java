@@ -2,6 +2,9 @@ package com.employeeportal.model.onboarding;
 
 import lombok.Data;
 import javax.persistence.*;
+
+import com.employeeportal.model.registration.Employee;
+
 import java.sql.Date;
 
 @Data
