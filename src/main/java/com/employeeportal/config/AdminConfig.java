@@ -1,6 +1,14 @@
 package com.employeeportal.config;
-import com.employeeportal.model.PrimaryDetails;
-import com.employeeportal.repository.PrimaryDetailsRepository;
+
+import com.employeeportal.model.onboarding.EmployeeOrganizationDetails;
+import com.employeeportal.model.onboarding.Role;
+import com.employeeportal.model.registration.Employee;
+import com.employeeportal.model.registration.EmployeeReg;
+import com.employeeportal.repository.onboarding.EmployeeOrganizationDetailsRepository;
+import com.employeeportal.repository.onboarding.RoleRepository;
+import com.employeeportal.repository.registration.EmployeeRegRepository;
+import com.employeeportal.repository.registration.EmployeeRepository;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,32 +20,65 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public class AdminConfig {
 
-    private final PrimaryDetailsRepository primaryDetailsRepository;
-
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeRegRepository employeeRegRepository;
+    private final EmployeeOrganizationDetailsRepository employeeOrganizationDetailsRepository;
+    private final RoleRepository roleRepository;
     private final AdminProperties adminProperties;
-
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminConfig(PrimaryDetailsRepository userRepository, AdminProperties adminProperties, PasswordEncoder passwordEncoder) {
-        this.primaryDetailsRepository = userRepository;
+    public AdminConfig(AdminProperties adminProperties, PasswordEncoder passwordEncoder,
+            EmployeeRepository employeeRepository, EmployeeRegRepository employeeRegRepository,
+            RoleRepository roleRepository,
+            EmployeeOrganizationDetailsRepository employeeOrganizationDetailsRepository) {
+
+        this.employeeOrganizationDetailsRepository = employeeOrganizationDetailsRepository;
         this.adminProperties = adminProperties;
         this.passwordEncoder = passwordEncoder;
+        this.employeeRepository = employeeRepository;
+        this.employeeRegRepository = employeeRegRepository;
+        this.roleRepository = roleRepository;
     }
 
     @PostConstruct
     public void init() {
-        if (!primaryDetailsRepository.existsByEmail(adminProperties.getEmailAddress())) {
+        if (!employeeRegRepository.existsByEmail(adminProperties.getEmailAddress())) {
             saveAdminDetails();
         }
     }
 
+
     private void saveAdminDetails() {
-        PrimaryDetails user = new PrimaryDetails();
-            user.setFullName(adminProperties.getUserName());
-            user.setEmail(adminProperties.getEmailAddress());
-            user.setPassword(passwordEncoder.encode(adminProperties.getPassword()));
-            user.setRoleName("SUPER_ADMIN");
-        primaryDetailsRepository.save(user);
+
+
+        Role role = new Role();
+        role.setRoleName("SUPER_ADMIN");
+        roleRepository.save(role);
+
+        EmployeeReg employeeReg = new EmployeeReg();
+        employeeReg.setEmail(adminProperties.getEmailAddress());
+        employeeReg.setPassword(passwordEncoder.encode(adminProperties.getPassword()));
+        employeeReg.setRole(role);
+        
+        Employee user = new Employee();
+        user.setFirstName(adminProperties.getUserName());
+        user.setEmail(adminProperties.getEmailAddress());
+
+        user.setEmployeeReg(employeeReg);
+        employeeReg.setEmployee(user);
+        
+        employeeRepository.save(user);
+
+        
+
+        
+        
+
+        EmployeeOrganizationDetails employeeOrganizationDetails = new EmployeeOrganizationDetails();
+        employeeOrganizationDetails.setEmployee(user);
+        employeeOrganizationDetails.setRole(role);
+        employeeOrganizationDetailsRepository.save(employeeOrganizationDetails);
+
     }
 }

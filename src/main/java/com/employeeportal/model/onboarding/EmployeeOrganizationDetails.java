@@ -14,14 +14,18 @@ import java.sql.Date;
 @Table(name = "employee_organization_details")
 public class EmployeeOrganizationDetails {
 
-    @Column(name = "employee_code", nullable = false, length = 50)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int employeeOrganizationId;
+
+    @Column(name = "employee_code", length = 50)
     private String employeeCode;
 
     @ManyToOne
-    @JoinColumn(name = "roleId", nullable = false)
+    @JoinColumn(name = "roleId")
     private Role role;
 
-    @Column(name = "designation", nullable = false, length = 100)
+    @Column(name = "designation", length = 100)
     private String designation;
 
     @Column(name = "reporting_manager", length = 100)
@@ -30,12 +34,12 @@ public class EmployeeOrganizationDetails {
     @Column(name = "reporting_hr", length = 100)
     private String reportingHr;
 
-    @Column(name = "joining_date", nullable = false)
+    @Column(name = "joining_date")
     private Date joiningDate;
 
     @OneToOne
     @JsonIgnore
-    @JoinColumn(name = "employeeId", nullable = false)
+    @JoinColumn(name = "employee_id")
     private Employee employee;
 
 }

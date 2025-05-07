@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 public interface PassportDetailsRepository extends JpaRepository<PassportDetails, Long> {
 
     PassportDetails findByPassportNumber(String passportNumber);
-    PassportDetails findByEmployeeId(int employeeId);
+    PassportDetails findByEmployeeEmployeeId(int employeeId);
 }

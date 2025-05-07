@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    List<Address> findByEmployeeId(int employeeId);
+    List<Address> findByEmployeeEmployeeId(int employeeId);
 }

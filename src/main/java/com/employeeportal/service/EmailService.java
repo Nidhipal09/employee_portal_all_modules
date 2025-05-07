@@ -31,21 +31,18 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void sendEmail(String email,String createdDate, String randomSixDigitNumber, String subject, String templateName) {
+    public void sendEmail(String email, String randomNumber, String subject, String templateName) {
         try {
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(emailProperties.getUserName());
             helper.setTo(email);
+
             Context ctx = new Context();
-            ctx.setVariable("otpCode", randomSixDigitNumber);
-           // ctx.setVariable("activateLink", EmailConstant.ACTIVE_SIGNUP_LINK+"?"+email+"/"+createdDate);
-           // ctx.setVariable("activateLink",EmailConstant.ACTIVE_SIGNUP_LINK + "?email=" + email + "&date=" + createdDate);
+            ctx.setVariable("otpCode", randomNumber);
             ctx.setVariable("activateLink", EmailConstant.ACTIVE_SIGNUP_LINK + "?email=" + email + "&timestamp=" + System.currentTimeMillis());
-            // Add reset password link
-          //  ctx.setVariable("activateLink", activationLink);
-            String resetLink = EmailConstant.RESET_PASSWORD_LINK + "?token=" + randomSixDigitNumber; // Use appropriate token
-            ctx.setVariable("resetLink", resetLink); // Add this line
+            ctx.setVariable("resetLink", EmailConstant.RESET_PASSWORD_LINK + "?token=" + randomNumber); 
+
             helper.setText(templateEngine.process(templateName, ctx), true);
             helper.setSubject(subject);
             emailSender.send(message);

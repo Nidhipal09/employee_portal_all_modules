@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProfessionalReferencesRepository extends JpaRepository<ProfessionalReferences, Long> {
-    List<ProfessionalReferences> findByEmployeeId(int employeeId);
+    List<ProfessionalReferences> findByEmployeeEmployeeId(int employeeId);
 }

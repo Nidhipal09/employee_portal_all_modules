@@ -1,14 +1,16 @@
 package com.employeeportal.util;
 
-
 import com.employeeportal.model.GeneralResponses;
 import com.employeeportal.model.JwtEntity;
-import com.employeeportal.model.PrimaryDetails;
-import com.employeeportal.model.Users;
-import com.employeeportal.repository.PrimaryDetailsRepository;
-
+import com.employeeportal.model.onboarding.EmployeeOrganizationDetails;
+import com.employeeportal.model.onboarding.Role;
+import com.employeeportal.model.registration.Employee;
+import com.employeeportal.model.registration.EmployeeReg;
+import com.employeeportal.repository.onboarding.EmployeeOrganizationDetailsRepository;
+import com.employeeportal.repository.onboarding.RoleRepository;
+import com.employeeportal.repository.registration.EmployeeRegRepository;
+import com.employeeportal.repository.registration.EmployeeRepository;
 import com.employeeportal.repository.JwtRepository;
-import com.employeeportal.repository.UsersRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -31,15 +33,23 @@ public class JwtUtil {
     @Value("${jwt.token.client.expiration}")
     private Long expiration;
 
-    private final PrimaryDetailsRepository employeeRepository;
-    private final UsersRepository usersRepository;
     private final JwtRepository jwtRepository;
 
+    private final EmployeeOrganizationDetailsRepository employeeOrganizationDetailsRepository;
+    private final RoleRepository roleRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeRegRepository employeeRegRepository;
+
     @Autowired
-    public JwtUtil(PrimaryDetailsRepository userRepository, PrimaryDetailsRepository employeeRepository, UsersRepository usersRepository, JwtRepository jwtRepository) {
-        this.employeeRepository = employeeRepository;
-        this.usersRepository = usersRepository;
+    public JwtUtil(JwtRepository jwtRepository,
+            EmployeeOrganizationDetailsRepository employeeOrganizationDetailsRepository,
+            RoleRepository roleRepository, EmployeeRepository employeeRepository,
+            EmployeeRegRepository employeeRegRepository) {
+        this.employeeRegRepository = employeeRegRepository;
         this.jwtRepository = jwtRepository;
+        this.employeeOrganizationDetailsRepository = employeeOrganizationDetailsRepository;
+        this.roleRepository = roleRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public String extractUsername(String token) {
@@ -54,6 +64,7 @@ public class JwtUtil {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
@@ -62,38 +73,25 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String employeename) {
+    public String generateToken(String email) {
+        EmployeeReg employeeReg = employeeRegRepository.findByEmail(email);
+        return generateToken(employeeReg);
+    }
+
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        PrimaryDetails primaryDetails = employeeRepository.findByEmail(employeename);
-        Users user = usersRepository.findByEmail(employeename);
-        GeneralResponses generalResponses;
-        if(!ObjectUtils.isEmpty(primaryDetails)){
-            generalResponses  = employeeRepository.getIdByEmployeename(employeename);
-        }else{
-            generalResponses  = usersRepository.getIdByEmployeename(employeename);
-        }
-
-
-        claims.put("validSession", true);
-        claims.put("role", generalResponses.getROLE_NAME());
-        claims.put("primaryId", generalResponses.getID());
-        claims.put("emailId",employeename);
-        return createToken(claims, employeename);
+        return createToken(claims, userDetails.getUsername());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
 
-        String jwiId = UUID.randomUUID().toString();
-        JwtEntity jwtEntity =  new JwtEntity();
-        jwtEntity.setJti(jwiId);
-        jwtEntity.setValidSession(true) ;
-        jwtEntity.setPrimaryId((int)claims.get("primaryId")) ;
-        jwtRepository.saveAndFlush(jwtEntity);
-
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .setSubject(subject)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(SignatureAlgorithm.HS256, secret)
-                .setId(jwiId)
                 .compact();
     }
 
@@ -108,11 +106,6 @@ public class JwtUtil {
     }
 
     public String extractJti(String token) {
-        return extractClaim(token, Claims::getId);  // Extract JTI from the token using Claims::getId
+        return extractClaim(token, Claims::getId); // Extract JTI from the token using Claims::getId
     }
 }
-
-
-
-
-

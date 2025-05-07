@@ -3,14 +3,16 @@ package com.employeeportal.controller.registration;
 import java.util.List;
 import java.util.Map;
 
-import com.employeeportal.dto.registration.EmployeeRegistrationDTO;
+import com.employeeportal.dto.registration.RegistrationRequestDTO;
+import com.employeeportal.dto.registration.RegistrationResponseDTO;
+import com.employeeportal.dto.registration.SendOtpDto;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.exception.ResourceNotFoundException;
+import com.employeeportal.model.NewClass;
 import com.employeeportal.model.OtpResponse;
-import com.employeeportal.model.ResponseDTO;
-import com.employeeportal.model.dto.PrimaryDetailsDTO;
-import com.employeeportal.model.dto.ValidateOtpTokenResponse;
+import com.employeeportal.model.login.ResponseDTO;
 import com.employeeportal.model.registration.Employee;
+import com.employeeportal.model.registration.ValidateOtpTokenResponse;
 import com.employeeportal.util.JwtUtil;
 import com.employeeportal.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import com.employeeportal.model.PrimaryDetails;
-import com.employeeportal.model.dto.SendOtpDto;
 import com.employeeportal.service.registration.RegistrationService;
 
 @RestController
-@RequestMapping("/employee/register")
+@RequestMapping("/primaryDetails")
 @CrossOrigin(origins = "*")
 public class RegistrationController {
     private final ResponseUtil responseUtil;
@@ -39,6 +38,79 @@ public class RegistrationController {
         this.registrationService = registrationService;
     }
 
+    @PostMapping("/create")
+    // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
+    public ResponseEntity<RegistrationResponseDTO> registerEmployee(@RequestBody RegistrationRequestDTO employeeRegistrationDTO) {
+        RegistrationResponseDTO registrationResponseDTO = registrationService.registerEmployee(employeeRegistrationDTO);
+        return new ResponseEntity<>(registrationResponseDTO, HttpStatus.CREATED);
+
+    }
+
+    // @PostMapping("/create")
+    // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
+    // public void registerEmployee(@RequestBody NewClass newClass) {
+    //     System.out.println(newClass.toString());
+        // Employee employee = registrationService.registerEmployee(employeeRegistrationDTO);
+        // return new ResponseEntity<>(employee, HttpStatus.CREATED);
+
+    // }
+
+    @PostMapping("/sendOtp")
+    public ResponseEntity<?> sendOtpEmail(@RequestBody SendOtpDto email) {
+        System.out.println("skjskjskjssssssssjjjjjjjjjjjjjjjjjjj" + email.getEmail());
+        String otp = registrationService.sendOtpEmail(email.getEmail());
+        return ResponseEntity.ok(new OtpResponse(otp));
+    }
+
+    @PostMapping("/validate")
+    // @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN')")
+    public ResponseEntity<ResponseDTO> validateOtp(@RequestParam String email, @RequestParam String otp) {
+        try {
+            boolean isValid = registrationService.validateOtp(email, otp);
+            System.out.println("sssssssssssssssssssssssss"+isValid);
+            ValidateOtpTokenResponse validateResponse = new ValidateOtpTokenResponse();
+
+            if (isValid) {
+                validateResponse.setToken(jwtUtil.generateToken(email));
+            } else {
+                throw new NotFoundException();
+            }
+            ResponseDTO response = responseUtil.prepareResponseDto(validateResponse,
+                    "Otp is Valid",
+                    HttpStatus.OK.value(), 
+                    true);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception ex) {
+            ResponseDTO response = responseUtil.prepareResponseDto(null,
+                    "Invalid or expired OTP",
+                    HttpStatus.BAD_REQUEST.value(), 
+                    false);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/resendOtp")
+    public ResponseEntity<?> resendOtp(@RequestBody SendOtpDto email) {
+        String otp = registrationService.sendOtpEmail(email.getEmail());
+        return ResponseEntity.ok(new OtpResponse(otp));
+    }
+
+    @PostMapping("/resend-activation-link")
+    public ResponseEntity<String> resendActivationLink(@RequestParam String email) {
+
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email is required.");
+        }
+        try {
+            String activationLink = registrationService.resendActivationLink(email);
+            return ResponseEntity.ok("Activation link resent successfully: " + activationLink);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to resend activation link.");
+        }
+    }
+
     // @PostMapping("/save")
     // @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN','ROLE_SUPER_ADMIN')")
     // public ResponseEntity<PrimaryDetails> savePrimaryDetails(@RequestBody
@@ -48,14 +120,6 @@ public class RegistrationController {
     // return new ResponseEntity<>(addprimaryDetails, HttpStatus.CREATED);
 
     // }
-
-    @PostMapping
-    @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
-    public ResponseEntity<Employee> createPrimaryDetails(@RequestBody EmployeeRegistrationDTO employeeRegistrationDTO) {
-        Employee employee = registrationService.createEmployee(employeeRegistrationDTO);
-        return new ResponseEntity<>(employee, HttpStatus.CREATED);
-
-    }
 
     // @GetMapping("/allPrimaryDetails")
     // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN','ROLE_EMPLOYEE')")
@@ -95,57 +159,5 @@ public class RegistrationController {
     // registrationService.deletePrimaryDetailsById(primaryId);
     // return new ResponseEntity<>("data deleted", HttpStatus.OK);
     // }
-
-    @PostMapping("/sendOtp")
-    public ResponseEntity<?> sendEmailOtp(@RequestBody SendOtpDto email) {
-        String otp = registrationService.sendEmailOtp(email);
-        return ResponseEntity.ok(new OtpResponse(otp));
-    }
-
-    @PostMapping("/validate")
-    // @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN')")
-    public ResponseEntity<ResponseDTO> validateOtp(@RequestParam String email, @RequestParam String otp) {
-        try {
-            boolean isValid = registrationService.validateOtp(email, otp);
-            ValidateOtpTokenResponse validateResponse = new ValidateOtpTokenResponse();
-
-            if (isValid) {
-                validateResponse.setToken(jwtUtil.generateToken(email));
-            } else {
-                throw new NotFoundException();
-            }
-            ResponseDTO response = responseUtil.prepareResponseDto(validateResponse,
-                    "Otp is Valid",
-                    HttpStatus.OK.value(), true);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception ex) {
-            ResponseDTO response = responseUtil.prepareResponseDto(null,
-                    "Invalid or expired OTP",
-                    HttpStatus.BAD_REQUEST.value(), false);
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping("/resendOtp")
-    public ResponseEntity<?> resendOtp(@RequestBody SendOtpDto email) {
-        String otp = registrationService.resendOtp(email.getEmail());
-        return ResponseEntity.ok(new OtpResponse(otp));
-    }
-
-    @PostMapping("/resend-activation-link")
-    public ResponseEntity<String> resendActivationLink(@RequestParam String email) {
-
-        if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body("Email is required.");
-        }
-        try {
-            String activationLink = registrationService.resendActivationLink(email);
-            return ResponseEntity.ok("Activation link resent successfully: " + activationLink);
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to resend activation link.");
-        }
-    }
 
 }

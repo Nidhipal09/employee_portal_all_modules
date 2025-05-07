@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VisaDetailsRepository extends JpaRepository<VisaDetails, Long> {
-    VisaDetails findByEmployeeId(int employeeId);
+    VisaDetails findByEmployeeEmployeeId(int employeeId);
 }

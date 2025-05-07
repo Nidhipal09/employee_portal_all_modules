@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EducationRepository extends JpaRepository<Education, Long> {
-    List<Education> findByEmployeeId(int employeeId);
+    List<Education> findByEmployeeEmployeeId(int employeeId);
 }

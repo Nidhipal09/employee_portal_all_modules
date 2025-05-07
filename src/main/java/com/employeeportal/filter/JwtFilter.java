@@ -1,15 +1,19 @@
 package com.employeeportal.filter;
+
 import com.employeeportal.config.ApplicationConstant;
 import com.employeeportal.exception.EmployeeNotFoundException;
 import com.employeeportal.exception.ExceptionResponse;
 import com.employeeportal.exception.TokenExpireException;
-import com.employeeportal.model.PrimaryDetails;
 import com.employeeportal.model.JwtEntity;
-import com.employeeportal.model.Users;
-import com.employeeportal.repository.PrimaryDetailsRepository;
+import com.employeeportal.model.onboarding.EmployeeOrganizationDetails;
+import com.employeeportal.model.onboarding.Role;
+import com.employeeportal.model.registration.Employee;
+import com.employeeportal.model.registration.EmployeeReg;
+import com.employeeportal.repository.onboarding.EmployeeOrganizationDetailsRepository;
+import com.employeeportal.repository.onboarding.RoleRepository;
+import com.employeeportal.repository.registration.EmployeeRegRepository;
+import com.employeeportal.repository.registration.EmployeeRepository;
 import com.employeeportal.repository.JwtRepository;
-import com.employeeportal.repository.UsersRepository;
-import com.employeeportal.serviceImpl.EmployeeDetailServiceImpl;
 import com.employeeportal.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
@@ -22,9 +26,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.Authentication;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -39,83 +45,71 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-    private final EmployeeDetailServiceImpl service;
+    private final UserDetailsService service;
     private final JwtRepository jwtRepository;
-    private final PrimaryDetailsRepository primaryDetailsRepository;
-    private final UsersRepository usersRepository;
-
+    private final EmployeeRegRepository employeeRegRepository;
+    private final EmployeeRepository employeeRepository;
+    private final EmployeeOrganizationDetailsRepository employeeOrganizationDetailsRepository;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public JwtFilter(JwtUtil jwtUtil, EmployeeDetailServiceImpl service, JwtRepository jwtRepository, PrimaryDetailsRepository primaryDetailsRepository, UsersRepository usersRepository) {
+    public JwtFilter(JwtUtil jwtUtil, UserDetailsService service, JwtRepository jwtRepository,
+            EmployeeRegRepository employeeRegRepository,
+            EmployeeOrganizationDetailsRepository employeeOrganizationDetailsRepository,
+            RoleRepository roleRepository, EmployeeRepository employeeRepository) {
         this.jwtUtil = jwtUtil;
         this.service = service;
         this.jwtRepository = jwtRepository;
-        this.primaryDetailsRepository = primaryDetailsRepository;
-
-        this.usersRepository = usersRepository;
+        this.employeeRegRepository = employeeRegRepository;
+        this.employeeRepository = employeeRepository;
+        this.employeeOrganizationDetailsRepository = employeeOrganizationDetailsRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
+
+        final String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
-            String authorizationHeader = httpServletRequest.getHeader(ApplicationConstant.HEADERS);
+            final String jwt = authHeader.substring(7);
+            final String userEmail = jwtUtil.extractUsername(jwt);
 
-            String token = null;
-            String userName = null;
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            if (authorizationHeader != null && authorizationHeader.startsWith(ApplicationConstant.AUTH_TYPE)) {
-                token = authorizationHeader.substring(7);
-                userName = jwtUtil.extractUsername(token);
-            }
+            if (userEmail != null && authentication == null) {
+                UserDetails userDetails = this.service.loadUserByUsername(userEmail);
 
-            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities());
 
-                UserDetails userDetails = service.loadUserByUsername(userName);
-                if (jwtUtil.validateToken(token, userDetails)) {
-                    Claims claims = jwtUtil.getClaims(token);
-                    Optional<JwtEntity> jwtEntity = jwtRepository.findByJtiAndValidSession(claims.getId(), false);
-                    if (jwtEntity.isPresent()) {
-                        throw new TokenExpireException();
-                    } else {
-                        String email = (String) claims.get("emailId");
-                        PrimaryDetails employee = primaryDetailsRepository.findByEmail(email);
-                        Users users = usersRepository.findByEmail(email);
-                        String roleName = "";
-                        if(employee == null && users == null) {
-                           throw new EmployeeNotFoundException();
-                        }
-                        if(employee!= null){
-                            roleName=employee.getRoleName();
-                        } else if (users!=null) {
-                            roleName=users.getRoleName();
-
-                        }
-                        Collection<? extends GrantedAuthority> authorities = new ArrayList<>();
-                            authorities =
-                                    Arrays.stream(("ROLE_"+roleName).split(","))
-                                            .map(SimpleGrantedAuthority::new)
-                                            .collect(Collectors.toList());
-                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                                new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-                        usernamePasswordAuthenticationToken
-                                .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    }
-                } else {
-                    throw new TokenExpireException();
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
+
+            filterChain.doFilter(request, response);
         } catch (TokenExpireException | ExpiredJwtException ex) {
-            handleGenericException(httpServletResponse, ex, HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+            handleGenericException(response, ex, HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
         } catch (EmployeeNotFoundException | NoSuchElementException ex) {
-            handleGenericException(httpServletResponse, ex, HttpStatus.NOT_FOUND.value(), ApplicationConstant.AUTHORIZATION_ERROR);
+            handleGenericException(response, ex, HttpStatus.NOT_FOUND.value(),
+                    ApplicationConstant.AUTHORIZATION_ERROR);
         } catch (Exception ex) {
-            handleGenericException(httpServletResponse, ex, HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+            handleGenericException(response, ex, HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
         }
     }
 
-    private void handleGenericException(HttpServletResponse response, final Exception ex, Integer code, String message) throws IOException {
+    private void handleGenericException(HttpServletResponse response, final Exception ex, Integer code, String message)
+            throws IOException {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setCode(code);
         exceptionResponse.setMessage(message);

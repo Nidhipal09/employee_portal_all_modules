@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IdentificationDetailsRepository extends JpaRepository<IdentificationDetails, Long> {
-    List<IdentificationDetails> findByEmployeeId(int employeeId);
+    List<IdentificationDetails> findByEmployeeEmployeeId(int employeeId);
 }

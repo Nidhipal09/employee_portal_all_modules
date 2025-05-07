@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class OnboardingDetails {
 
-    private EmployeeDTO employee;
+    
     private PersonalDetailsDTO personalDetails;
     private List<AddressDTO> address;
     private List<EducationDTO> education;

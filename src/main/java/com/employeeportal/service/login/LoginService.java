@@ -2,19 +2,16 @@ package com.employeeportal.service.login;
 
 import java.util.List;
 
-import com.employeeportal.model.PrimaryDetails;
-import com.employeeportal.model.dto.PreviewDetailsDTO;
-import com.employeeportal.model.dto.PrimaryDetailsDTO;
-import com.employeeportal.model.dto.PrimaryPreviewResponse;
-import com.employeeportal.model.dto.SendOtpDto;
+import com.employeeportal.model.LoginRequest;
+import com.employeeportal.model.LoginResponse;
 
 public interface LoginService {
 
-	void sendPasswordResetEmail(String email) throws Exception;
+	LoginResponse verifyLogin(LoginRequest loginRequest) throws Exception;
 
-	String generateResetToken(String email);
+	void sendPasswordResetEmail(String email) throws Exception;
 
 	void resetPassword(String token, String newPassword) throws Exception;
 
-	void tokenLogout(String jwtToken);
+	void logout(String token);
 }

@@ -1,10 +1,13 @@
 package com.employeeportal.controller.onboarding;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.employeeportal.model.onboarding.OnboardingDetails;
@@ -18,13 +21,14 @@ public class OnboardingController {
     private OnboardingService onboardingService;
 
     @PostMapping
-    public void fillOnboardingDetails(@RequestBody OnboardingDetails onboardingDetails) {
-        onboardingService.fillOnboardingDetails(onboardingDetails);
+    public ResponseEntity<OnboardingDetails> fillOnboardingDetails(@RequestBody OnboardingDetails onboardingDetails) {
+        return new ResponseEntity<>(onboardingService.fillOnboardingDetails(onboardingDetails), HttpStatus.OK);
     }
 
     @GetMapping
-    public OnboardingDetails getOnboardingDetails(@RequestBody int employeeId) {
-        return onboardingService.getOnboardingDetails(employeeId);
+    public ResponseEntity<OnboardingDetails> getOnboardingDetails(@RequestParam String email) {
+        OnboardingDetails onboardingDetails = onboardingService.getOnboardingDetails(email);
+        return new ResponseEntity<>(onboardingDetails, HttpStatus.ACCEPTED);
     }
 
 }

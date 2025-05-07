@@ -28,6 +28,7 @@ import com.employeeportal.model.onboarding.EmploymentHistory;
 import com.employeeportal.model.onboarding.ProfessionalReferences;
 import com.employeeportal.model.onboarding.Relatives;
 import com.employeeportal.model.onboarding.VisaDetails;
+import com.employeeportal.model.registration.Employee;
 import com.employeeportal.repository.onboarding.AddressRepository;
 import com.employeeportal.repository.onboarding.EducationRepository;
 import com.employeeportal.repository.onboarding.EmploymentHistoryRepository;
@@ -38,6 +39,7 @@ import com.employeeportal.repository.onboarding.PersonalDetailsRepository;
 import com.employeeportal.repository.onboarding.ProfessionalReferencesRepository;
 import com.employeeportal.repository.onboarding.RelativesRepository;
 import com.employeeportal.repository.onboarding.VisaDetailsRepository;
+import com.employeeportal.repository.registration.EmployeeRepository;
 import com.employeeportal.service.onboarding.OnboardingService;;
 
 @Service
@@ -76,27 +78,37 @@ public class OnboadingServiceImpl implements OnboardingService {
     @Autowired
     private VisaDetailsRepository visaDetailsRepository;
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     @Override
-    public void fillOnboardingDetails(OnboardingDetails onboardingDetails) {
+    public OnboardingDetails fillOnboardingDetails(OnboardingDetails onboardingDetails) {
 
         String pageIdentifier = onboardingDetails.getPageIdentifier();
+        Employee employee = employeeRepository.findByEmail(onboardingDetails.getPersonalDetails().getPersonalEmail());
 
         if (pageIdentifier.equals("personalDetails")) {
 
             PersonalDetailsDTO personalDetailsDTO = onboardingDetails.getPersonalDetails();
-            PersonalDetails personalDetails = dtoToEntity(personalDetailsDTO, PersonalDetails.class);
-            personalDetails.setPersonalEmail(onboardingDetails.getEmployee().getEmail());
+            PersonalDetails personalDetails = personalDetailsRepository.findByPersonalEmail(personalDetailsDTO.getPersonalEmail());
+            personalDetails.setImageUrl(personalDetailsDTO.getImageUrl());
+            personalDetails.setGender(personalDetailsDTO.getGender());
+            personalDetails.setMotherName(personalDetailsDTO.getMotherName());
+            personalDetails.setFatherName(personalDetailsDTO.getFatherName());
+            personalDetails.setSecondaryMobile(personalDetailsDTO.getSecondaryMobile());          
             personalDetailsRepository.save(personalDetails);
 
             List<IdentificationDetailsDTO> identificationDetailsDTOs = onboardingDetails.getIdentificationDetails();
             identificationDetailsDTOs.forEach(identificationDetailsDTO -> {
                 IdentificationDetails identificationDetail = dtoToEntity(identificationDetailsDTO,
                         IdentificationDetails.class);
+                identificationDetail.setEmployee(employee);        
                 identificationDetailsRepository.save(identificationDetail);
             });
 
             PassportDetailsDTO passportDetailsDTO = onboardingDetails.getPassportDetails();
             PassportDetails passportDetails = dtoToEntity(passportDetailsDTO, PassportDetails.class);
+            passportDetails.setEmployee(employee);
             passportDetailsRepository.save(passportDetails);
 
         } else if (pageIdentifier.equals("contact")) {
@@ -104,6 +116,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             List<AddressDTO> addressDTOs = onboardingDetails.getAddress();
             addressDTOs.forEach(addressDTO -> {
                 Address address = dtoToEntity(addressDTO, Address.class);
+                address.setEmployee(employee);
                 addressRepository.save(address);
             });
 
@@ -112,12 +125,14 @@ public class OnboadingServiceImpl implements OnboardingService {
             List<EducationDTO> educationDTOs = onboardingDetails.getEducation();
             educationDTOs.forEach(educationDTO -> {
                 Education educationDetails = dtoToEntity(educationDTO, Education.class);
+                educationDetails.setEmployee(employee);
                 educationRepository.save(educationDetails);
             });
 
             List<EmploymentHistoryDTO> employmentHistoryDTOs = onboardingDetails.getEmploymentHistories();
             employmentHistoryDTOs.forEach(employmentHistoryDTO -> {
                 EmploymentHistory employmentHistory = dtoToEntity(employmentHistoryDTO, EmploymentHistory.class);
+                employmentHistory.setEmployee(employee);    
                 employmentHistoryRepository.save(employmentHistory);
             });
 
@@ -127,12 +142,14 @@ public class OnboadingServiceImpl implements OnboardingService {
             professionalReferencesDTOs.forEach(professionalReferencesDTO -> {
                 ProfessionalReferences professionalReference = dtoToEntity(professionalReferencesDTO,
                         ProfessionalReferences.class);
+                professionalReference.setEmployee(employee);
                 professionalReferencesRepository.save(professionalReference);
             });
 
             List<RelativesDTO> relativesDTOs = onboardingDetails.getRelatives();
             relativesDTOs.forEach(relativesDTO -> {
                 Relatives relative = dtoToEntity(relativesDTO, Relatives.class);
+                relative.setEmployee(employee);
                 relativesRepository.save(relative);
             });
 
@@ -148,15 +165,19 @@ public class OnboadingServiceImpl implements OnboardingService {
 
             VisaDetailsDTO visaDetailsDTO = onboardingDetails.getVisaDetails();
             VisaDetails visaDetails = dtoToEntity(visaDetailsDTO, VisaDetails.class);
+            visaDetails.setEmployee(employee);
             visaDetailsRepository.save(visaDetails);
 
         } else if (pageIdentifier.equals("other")) {
 
             OtherDetailsDTO otherDetailsDTO = onboardingDetails.getOtherDetails();
             OtherDetails otherDetails = dtoToEntity(otherDetailsDTO, OtherDetails.class);
+            otherDetails.setEmployee(employee);
             otherDetailsRepository.save(otherDetails);
 
         }
+
+        return onboardingDetails;
 
     }
 
@@ -178,56 +199,58 @@ public class OnboadingServiceImpl implements OnboardingService {
     }
 
     @Override
-    public OnboardingDetails getOnboardingDetails(int employeeId) {
+    public OnboardingDetails getOnboardingDetails(String email) {
         OnboardingDetails onboardingDetails = new OnboardingDetails();
 
+        PersonalDetails personalDetails = personalDetailsRepository.findByPersonalEmail(email);
+        int employeeId = personalDetails.getEmployee().getEmployeeId();
+
         // Fetch and set personal details
-        PersonalDetails personalDetails = personalDetailsRepository.findByEmployeeId(employeeId);
         if (personalDetails != null) {
             PersonalDetailsDTO personalDetailsDTO = entityToDto(personalDetails, PersonalDetailsDTO.class);
             onboardingDetails.setPersonalDetails(personalDetailsDTO);
         }
 
         // Fetch and set identification details 
-        List<IdentificationDetails> identificationDetailsList = identificationDetailsRepository.findByEmployeeId(employeeId);
+        List<IdentificationDetails> identificationDetailsList = identificationDetailsRepository.findByEmployeeEmployeeId(employeeId);
         onboardingDetails.setIdentificationDetails(entityListToDtoList(identificationDetailsList, IdentificationDetailsDTO.class));
 
         // Fetch and set Address details
-        List<Address> addressList = addressRepository.findByEmployeeId(employeeId);
+        List<Address> addressList = addressRepository.findByEmployeeEmployeeId(employeeId);
         onboardingDetails.setAddress(entityListToDtoList(addressList, AddressDTO.class));
 
         // Fetch and set Education details
-        List<Education> educationList = educationRepository.findByEmployeeId(employeeId);
+        List<Education> educationList = educationRepository.findByEmployeeEmployeeId(employeeId);
         onboardingDetails.setEducation(entityListToDtoList(educationList, EducationDTO.class));
 
         // Fetch and set Employment History details
-        List<EmploymentHistory> employmentHistoryList = employmentHistoryRepository.findByEmployeeId(employeeId);
+        List<EmploymentHistory> employmentHistoryList = employmentHistoryRepository.findByEmployeeEmployeeId(employeeId);
         onboardingDetails.setEmploymentHistories(entityListToDtoList(employmentHistoryList, EmploymentHistoryDTO.class));
 
         // Fetch and set Professional References details
-        List<ProfessionalReferences> professionalReferencesList = professionalReferencesRepository.findByEmployeeId(employeeId);
+        List<ProfessionalReferences> professionalReferencesList = professionalReferencesRepository.findByEmployeeEmployeeId(employeeId);
         onboardingDetails.setProfessionalReferences(entityListToDtoList(professionalReferencesList, ProfessionalReferencesDTO.class));
 
         // Fetch and set Relatives details
-        List<Relatives> relativesList = relativesRepository.findByEmployeeId(employeeId);
+        List<Relatives> relativesList = relativesRepository.findByEmployeeEmployeeId(employeeId);
         onboardingDetails.setRelatives(entityListToDtoList(relativesList, RelativesDTO.class));
 
         // Fetch and set Passport details
-        PassportDetails passportDetails = passportDetailsRepository.findByEmployeeId(employeeId);
+        PassportDetails passportDetails = passportDetailsRepository.findByEmployeeEmployeeId(employeeId);
         if (passportDetails != null) {
             PassportDetailsDTO passportDetailsDTO = entityToDto(passportDetails, PassportDetailsDTO.class);
             onboardingDetails.setPassportDetails(passportDetailsDTO);
         }
 
         // Fetch and set Visa details
-        VisaDetails visaDetails = visaDetailsRepository.findByEmployeeId(employeeId);
+        VisaDetails visaDetails = visaDetailsRepository.findByEmployeeEmployeeId(employeeId);
         if (visaDetails != null) {
             VisaDetailsDTO visaDetailsDTO = entityToDto(visaDetails, VisaDetailsDTO.class);
             onboardingDetails.setVisaDetails(visaDetailsDTO);
         }
 
         // Fetch and set Other details
-        OtherDetails otherDetails = otherDetailsRepository.findByEmployeeId(employeeId);
+        OtherDetails otherDetails = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
         if (otherDetails != null) {
             OtherDetailsDTO otherDetailsDTO = entityToDto(otherDetails, OtherDetailsDTO.class);
             onboardingDetails.setOtherDetails(otherDetailsDTO);

@@ -16,7 +16,6 @@ import com.employeeportal.model.onboarding.ProfessionalReferences;
 import com.employeeportal.model.onboarding.Relatives;
 import com.employeeportal.model.onboarding.VisaDetails;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.sql.Date;
 
@@ -33,11 +32,9 @@ public class Employee {
     private String mobileNumber;
     private Date dateOfBirth;
     private String email;
-    private String password;
-    private String status;
-    private LocalDateTime createdDate;
+    private EmployeeStatus status;
     
-    @OneToOne(mappedBy = "employee")
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private PersonalDetails personalDetails;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
@@ -65,10 +62,13 @@ public class Employee {
     private List<Relatives> relatives;
 
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
-    private List<OtherDetails> otherDetails;
+    private OtherDetails otherDetails;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
     private List<EmploymentHistory> employmentHistories;
+
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    private EmployeeReg employeeReg;
 
 
 }

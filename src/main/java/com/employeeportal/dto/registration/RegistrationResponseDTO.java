@@ -1,15 +1,12 @@
 package com.employeeportal.dto.registration;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class RegistrationResponseDTO {
 
-    private int employeeId;
-    private String message;
-
-    public RegistrationResponseDTO(int employeeId, String message) {
-        this.employeeId = employeeId;
-        this.message = message;
-    }
+    private String email;
+    private String fullName;
 }

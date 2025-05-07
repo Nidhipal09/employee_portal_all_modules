@@ -2,7 +2,7 @@ package com.employeeportal.util;
 
 
 
-import com.employeeportal.model.ResponseDTO;
+import com.employeeportal.model.login.ResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
