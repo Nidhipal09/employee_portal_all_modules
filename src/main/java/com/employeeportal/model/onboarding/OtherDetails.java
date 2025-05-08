@@ -13,8 +13,8 @@ public class OtherDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int otherId;
-    private String illness_declaration;
-    private String hobbies_declaration;
+    private String illnessDeclaration;
+    private String hobbiesDeclaration;
 
     @OneToOne
     @JsonIgnore

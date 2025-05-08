@@ -82,98 +82,147 @@ public class OnboadingServiceImpl implements OnboardingService {
     private EmployeeRepository employeeRepository;
 
     @Override
-    public OnboardingDetails fillOnboardingDetails(OnboardingDetails onboardingDetails) {
+    public OnboardingDetails fillOnboardingDetails(OnboardingDetails onboardingDetails, String email,
+            String pageIdentifier) {
 
-        String pageIdentifier = onboardingDetails.getPageIdentifier();
-        Employee employee = employeeRepository.findByEmail(onboardingDetails.getPersonalDetails().getPersonalEmail());
+        Employee employee = employeeRepository.findByEmail(email);
+        int employeeId = employee.getEmployeeId();
 
         if (pageIdentifier.equals("personalDetails")) {
 
             PersonalDetailsDTO personalDetailsDTO = onboardingDetails.getPersonalDetails();
-            PersonalDetails personalDetails = personalDetailsRepository.findByPersonalEmail(personalDetailsDTO.getPersonalEmail());
-            personalDetails.setImageUrl(personalDetailsDTO.getImageUrl());
-            personalDetails.setGender(personalDetailsDTO.getGender());
-            personalDetails.setMotherName(personalDetailsDTO.getMotherName());
-            personalDetails.setFatherName(personalDetailsDTO.getFatherName());
-            personalDetails.setSecondaryMobile(personalDetailsDTO.getSecondaryMobile());          
-            personalDetailsRepository.save(personalDetails);
+            if (!personalDetailsDTO.isNull()) {
+                PersonalDetails personalDetails = personalDetailsRepository.findByPersonalEmail(email);
+                personalDetails.setImageUrl(personalDetailsDTO.getImageUrl());
+                personalDetails.setGender(personalDetailsDTO.getGender());
+                personalDetails.setMotherName(personalDetailsDTO.getMotherName());
+                personalDetails.setFatherName(personalDetailsDTO.getFatherName());
+                personalDetails.setSecondaryMobile(personalDetailsDTO.getSecondaryMobile());
+                personalDetailsRepository.save(personalDetails);
+            }
 
             List<IdentificationDetailsDTO> identificationDetailsDTOs = onboardingDetails.getIdentificationDetails();
-            identificationDetailsDTOs.forEach(identificationDetailsDTO -> {
-                IdentificationDetails identificationDetail = dtoToEntity(identificationDetailsDTO,
-                        IdentificationDetails.class);
-                identificationDetail.setEmployee(employee);        
-                identificationDetailsRepository.save(identificationDetail);
-            });
+            if (identificationDetailsDTOs.isEmpty()) {
+                identificationDetailsDTOs.forEach(identificationDetailsDTO -> {
+                    IdentificationDetails identificationDetail = dtoToEntity(identificationDetailsDTO,
+                            IdentificationDetails.class);
+                    identificationDetail.setEmployee(employee);
+                    identificationDetailsRepository.save(identificationDetail);
+                });
+            }
 
             PassportDetailsDTO passportDetailsDTO = onboardingDetails.getPassportDetails();
-            PassportDetails passportDetails = dtoToEntity(passportDetailsDTO, PassportDetails.class);
-            passportDetails.setEmployee(employee);
-            passportDetailsRepository.save(passportDetails);
+            if (!passportDetailsDTO.isNull()) {
+                PassportDetails passportDetails = dtoToEntity(passportDetailsDTO, PassportDetails.class);
+                passportDetails.setEmployee(employee);
+                passportDetailsRepository.save(passportDetails);
+
+            }
+
+            fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "education");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("contact")) {
 
             List<AddressDTO> addressDTOs = onboardingDetails.getAddress();
-            addressDTOs.forEach(addressDTO -> {
-                Address address = dtoToEntity(addressDTO, Address.class);
-                address.setEmployee(employee);
-                addressRepository.save(address);
-            });
+            if (!addressDTOs.isEmpty()) {
+                addressDTOs.forEach(addressDTO -> {
+                    Address address = dtoToEntity(addressDTO, Address.class);
+                    address.setEmployee(employee);
+                    addressRepository.save(address);
+                });
+            }
+
+            fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "education");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("education")) {
 
+            System.out.println("===================="+onboardingDetails.getEducation());
             List<EducationDTO> educationDTOs = onboardingDetails.getEducation();
-            educationDTOs.forEach(educationDTO -> {
-                Education educationDetails = dtoToEntity(educationDTO, Education.class);
-                educationDetails.setEmployee(employee);
-                educationRepository.save(educationDetails);
-            });
+            if (!educationDTOs.isEmpty()) {
+                educationDTOs.forEach(educationDTO -> {
+                    Education educationDetails = dtoToEntity(educationDTO, Education.class);
+                    educationDetails.setEmployee(employee);
+                    educationRepository.save(educationDetails);
+                });
+            }
 
             List<EmploymentHistoryDTO> employmentHistoryDTOs = onboardingDetails.getEmploymentHistories();
-            employmentHistoryDTOs.forEach(employmentHistoryDTO -> {
-                EmploymentHistory employmentHistory = dtoToEntity(employmentHistoryDTO, EmploymentHistory.class);
-                employmentHistory.setEmployee(employee);    
-                employmentHistoryRepository.save(employmentHistory);
-            });
+            if (!employmentHistoryDTOs.isEmpty())
+                employmentHistoryDTOs.forEach(employmentHistoryDTO -> {
+                    EmploymentHistory employmentHistory = dtoToEntity(employmentHistoryDTO, EmploymentHistory.class);
+                    employmentHistory.setEmployee(employee);
+                    employmentHistoryRepository.save(employmentHistory);
+                });
+
+            fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("professional")) {
 
             List<ProfessionalReferencesDTO> professionalReferencesDTOs = onboardingDetails.getProfessionalReferences();
-            professionalReferencesDTOs.forEach(professionalReferencesDTO -> {
-                ProfessionalReferences professionalReference = dtoToEntity(professionalReferencesDTO,
-                        ProfessionalReferences.class);
-                professionalReference.setEmployee(employee);
-                professionalReferencesRepository.save(professionalReference);
-            });
+            if (!professionalReferencesDTOs.isEmpty()) {
+                professionalReferencesDTOs.forEach(professionalReferencesDTO -> {
+                    ProfessionalReferences professionalReference = dtoToEntity(professionalReferencesDTO,
+                            ProfessionalReferences.class);
+                    professionalReference.setEmployee(employee);
+                    professionalReferencesRepository.save(professionalReference);
+                });
+            }
 
             List<RelativesDTO> relativesDTOs = onboardingDetails.getRelatives();
-            relativesDTOs.forEach(relativesDTO -> {
-                Relatives relative = dtoToEntity(relativesDTO, Relatives.class);
-                relative.setEmployee(employee);
-                relativesRepository.save(relative);
-            });
+            if (!relativesDTOs.isEmpty()) {
+                relativesDTOs.forEach(relativesDTO -> {
+                    Relatives relative = dtoToEntity(relativesDTO, Relatives.class);
+                    relative.setEmployee(employee);
+                    relativesRepository.save(relative);
+                });
+            }
 
             PassportDetailsDTO passportDetailsDTO = onboardingDetails.getPassportDetails();
-            String passportNumber = passportDetailsDTO.getPassportNumber();
-            PassportDetails passportDetails = passportDetailsRepository.findByPassportNumber(passportNumber);
-            passportDetails.setDateOfIssue(passportDetailsDTO.getDateOfIssue());
-            passportDetails.setNationality(passportDetailsDTO.getNationality());
-            passportDetails.setPlaceOfIssue(passportDetailsDTO.getPlaceOfIssue());
-            passportDetails.setCountryOfIssue(passportDetailsDTO.getCountryOfIssue());
-            passportDetails.setValidUpto(passportDetailsDTO.getValidUpto());
-            passportDetailsRepository.save(passportDetails);
+            if (!passportDetailsDTO.isNull()) {
+                String passportNumber = passportDetailsDTO.getPassportNumber();
+                PassportDetails passportDetails = passportDetailsRepository.findByPassportNumber(passportNumber);
+                passportDetails.setDateOfIssue(passportDetailsDTO.getDateOfIssue());
+                passportDetails.setNationality(passportDetailsDTO.getNationality());
+                passportDetails.setPlaceOfIssue(passportDetailsDTO.getPlaceOfIssue());
+                passportDetails.setCountryOfIssue(passportDetailsDTO.getCountryOfIssue());
+                passportDetails.setValidUpto(passportDetailsDTO.getValidUpto());
+                passportDetailsRepository.save(passportDetails);
+            }
 
             VisaDetailsDTO visaDetailsDTO = onboardingDetails.getVisaDetails();
-            VisaDetails visaDetails = dtoToEntity(visaDetailsDTO, VisaDetails.class);
-            visaDetails.setEmployee(employee);
-            visaDetailsRepository.save(visaDetails);
+            if (!visaDetailsDTO.isNull()) {
+                VisaDetails visaDetails = dtoToEntity(visaDetailsDTO, VisaDetails.class);
+                visaDetails.setEmployee(employee);
+                visaDetailsRepository.save(visaDetails);
+            }
+
+            fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "education");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("other")) {
 
             OtherDetailsDTO otherDetailsDTO = onboardingDetails.getOtherDetails();
-            OtherDetails otherDetails = dtoToEntity(otherDetailsDTO, OtherDetails.class);
-            otherDetails.setEmployee(employee);
-            otherDetailsRepository.save(otherDetails);
+            if (!otherDetailsDTO.isNull()) {
+                OtherDetails otherDetails = dtoToEntity(otherDetailsDTO, OtherDetails.class);
+                otherDetails.setEmployee(employee);
+                otherDetailsRepository.save(otherDetails);
+            }
+
+            fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "education");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
 
         }
 
@@ -194,68 +243,106 @@ public class OnboadingServiceImpl implements OnboardingService {
             return null;
         }
         return entityList.stream()
-            .map(entity -> entityToDto(entity, dtoClass))
-            .collect(Collectors.toList());
+                .map(entity -> entityToDto(entity, dtoClass))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public OnboardingDetails getOnboardingDetails(String email) {
+    public OnboardingDetails getOnboardingDetails(String email, String pageIdentifier) {
         OnboardingDetails onboardingDetails = new OnboardingDetails();
 
-        PersonalDetails personalDetails = personalDetailsRepository.findByPersonalEmail(email);
-        int employeeId = personalDetails.getEmployee().getEmployeeId();
+        Employee employee = employeeRepository.findByEmail(email);
+        int employeeId = employee.getEmployeeId();
 
-        // Fetch and set personal details
-        if (personalDetails != null) {
-            PersonalDetailsDTO personalDetailsDTO = entityToDto(personalDetails, PersonalDetailsDTO.class);
-            onboardingDetails.setPersonalDetails(personalDetailsDTO);
-        }
-
-        // Fetch and set identification details 
-        List<IdentificationDetails> identificationDetailsList = identificationDetailsRepository.findByEmployeeEmployeeId(employeeId);
-        onboardingDetails.setIdentificationDetails(entityListToDtoList(identificationDetailsList, IdentificationDetailsDTO.class));
-
-        // Fetch and set Address details
-        List<Address> addressList = addressRepository.findByEmployeeEmployeeId(employeeId);
-        onboardingDetails.setAddress(entityListToDtoList(addressList, AddressDTO.class));
-
-        // Fetch and set Education details
-        List<Education> educationList = educationRepository.findByEmployeeEmployeeId(employeeId);
-        onboardingDetails.setEducation(entityListToDtoList(educationList, EducationDTO.class));
-
-        // Fetch and set Employment History details
-        List<EmploymentHistory> employmentHistoryList = employmentHistoryRepository.findByEmployeeEmployeeId(employeeId);
-        onboardingDetails.setEmploymentHistories(entityListToDtoList(employmentHistoryList, EmploymentHistoryDTO.class));
-
-        // Fetch and set Professional References details
-        List<ProfessionalReferences> professionalReferencesList = professionalReferencesRepository.findByEmployeeEmployeeId(employeeId);
-        onboardingDetails.setProfessionalReferences(entityListToDtoList(professionalReferencesList, ProfessionalReferencesDTO.class));
-
-        // Fetch and set Relatives details
-        List<Relatives> relativesList = relativesRepository.findByEmployeeEmployeeId(employeeId);
-        onboardingDetails.setRelatives(entityListToDtoList(relativesList, RelativesDTO.class));
-
-        // Fetch and set Passport details
-        PassportDetails passportDetails = passportDetailsRepository.findByEmployeeEmployeeId(employeeId);
-        if (passportDetails != null) {
-            PassportDetailsDTO passportDetailsDTO = entityToDto(passportDetails, PassportDetailsDTO.class);
-            onboardingDetails.setPassportDetails(passportDetailsDTO);
-        }
-
-        // Fetch and set Visa details
-        VisaDetails visaDetails = visaDetailsRepository.findByEmployeeEmployeeId(employeeId);
-        if (visaDetails != null) {
-            VisaDetailsDTO visaDetailsDTO = entityToDto(visaDetails, VisaDetailsDTO.class);
-            onboardingDetails.setVisaDetails(visaDetailsDTO);
-        }
-
-        // Fetch and set Other details
-        OtherDetails otherDetails = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
-        if (otherDetails != null) {
-            OtherDetailsDTO otherDetailsDTO = entityToDto(otherDetails, OtherDetailsDTO.class);
-            onboardingDetails.setOtherDetails(otherDetailsDTO);
-        }
+        fetchOnboardingDetails(onboardingDetails, employeeId, pageIdentifier);
 
         return onboardingDetails;
     }
+
+    private void fetchOnboardingDetails(OnboardingDetails onboardingDetails,
+            int employeeId, String pageIdentifier) {
+        if (pageIdentifier.equals("personalDetails")) {
+            PersonalDetails personalDetails = personalDetailsRepository.findByEmployeeEmployeeId(employeeId);
+            if (personalDetails != null) {
+                PersonalDetailsDTO personalDetailsDTO = entityToDto(personalDetails, PersonalDetailsDTO.class);
+                
+                Employee employee = employeeRepository.findByEmployeeId(employeeId);
+                String firstName = employee.getFirstName()==null ? "" : employee.getFirstName()+" ";
+                String middleName = employee.getMiddleName()==null ? "" : employee.getMiddleName()+" ";
+                String lastName = employee.getLastName()==null ? "" : employee.getLastName();
+                String fullName = firstName + middleName + lastName;
+                personalDetailsDTO.setFullName(fullName);
+                onboardingDetails.setPersonalDetails(personalDetailsDTO);
+            }
+
+            // Fetch and set identification details
+            List<IdentificationDetails> identificationDetailsList = identificationDetailsRepository
+                    .findByEmployeeEmployeeId(employeeId);
+            if (!identificationDetailsList.isEmpty()) {
+                onboardingDetails.setIdentificationDetails(
+                        entityListToDtoList(identificationDetailsList, IdentificationDetailsDTO.class));
+            }
+
+            PassportDetails passportDetails = passportDetailsRepository.findByEmployeeEmployeeId(employeeId);
+            if (passportDetails != null) {
+                PassportDetailsDTO passportDetailsDTO = entityToDto(passportDetails, PassportDetailsDTO.class);
+                onboardingDetails.setPassportDetails(passportDetailsDTO);
+            }
+        } else if (pageIdentifier.equals("contact")) {
+
+            // Fetch and set Address details
+            List<Address> addressList = addressRepository.findByEmployeeEmployeeId(employeeId);
+            if (!addressList.isEmpty())
+                onboardingDetails.setAddress(entityListToDtoList(addressList, AddressDTO.class));
+
+        } else if (pageIdentifier.equals("education")) {
+
+            // Fetch and set Education details
+            List<Education> educationList = educationRepository.findByEmployeeEmployeeId(employeeId);
+            if (!educationList.isEmpty())
+                onboardingDetails.setEducation(entityListToDtoList(educationList, EducationDTO.class));
+
+            // Fetch and set Employment History details
+            List<EmploymentHistory> employmentHistoryList = employmentHistoryRepository
+                    .findByEmployeeEmployeeId(employeeId);
+            if (!employmentHistoryList.isEmpty())
+                onboardingDetails.setEmploymentHistories(
+                        entityListToDtoList(employmentHistoryList, EmploymentHistoryDTO.class));
+
+        } else if (pageIdentifier.equals("professional")) {
+            // Fetch and set Professional References details
+            List<ProfessionalReferences> professionalReferencesList = professionalReferencesRepository
+                    .findByEmployeeEmployeeId(employeeId);
+            if (!professionalReferencesList.isEmpty())
+                onboardingDetails.setProfessionalReferences(
+                        entityListToDtoList(professionalReferencesList, ProfessionalReferencesDTO.class));
+
+            // Fetch and set Relatives details
+            List<Relatives> relativesList = relativesRepository.findByEmployeeEmployeeId(employeeId);
+            if (!relativesList.isEmpty())
+                onboardingDetails.setRelatives(entityListToDtoList(relativesList, RelativesDTO.class));
+
+            PassportDetails passportDetails = passportDetailsRepository.findByEmployeeEmployeeId(employeeId);
+            if (passportDetails != null) {
+                PassportDetailsDTO passportDetailsDTO = entityToDto(passportDetails, PassportDetailsDTO.class);
+                onboardingDetails.setPassportDetails(passportDetailsDTO);
+            }
+
+            VisaDetails visaDetails = visaDetailsRepository.findByEmployeeEmployeeId(employeeId);
+            if (visaDetails != null) {
+                VisaDetailsDTO visaDetailsDTO = entityToDto(visaDetails, VisaDetailsDTO.class);
+                onboardingDetails.setVisaDetails(visaDetailsDTO);
+            }
+
+        } else if (pageIdentifier.equals("other")) {
+            // Fetch and set Other details
+            OtherDetails otherDetails = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
+            if (otherDetails != null) {
+                OtherDetailsDTO otherDetailsDTO = entityToDto(otherDetails, OtherDetailsDTO.class);
+                onboardingDetails.setOtherDetails(otherDetailsDTO);
+            }
+        }
+
+    }
+
 }

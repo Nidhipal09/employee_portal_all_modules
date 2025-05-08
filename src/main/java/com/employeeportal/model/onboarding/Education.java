@@ -19,8 +19,8 @@ public class Education {
     private String passingYear;
     private String rollNumber;
     private String gradeOrPercentage;
-    private String passing_certificate;
-    private String degree_certificate;
+    private String passingCertificate;
+    private String degreeCertificate;
 
     @ManyToOne
     @JsonIgnore

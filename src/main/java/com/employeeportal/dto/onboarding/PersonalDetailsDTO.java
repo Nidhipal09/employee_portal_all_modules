@@ -10,5 +10,14 @@ public class PersonalDetailsDTO {
     private String fatherName;
     private String secondaryMobile;
     private String fullName;
-    private String personalEmail;
+
+    public boolean isNull() {
+        return this == null ||
+               (this.imageUrl == null &&
+                this.gender == null &&
+                this.motherName == null &&
+                this.fatherName == null &&
+                this.secondaryMobile == null &&
+                this.fullName == null);
+    }
 }

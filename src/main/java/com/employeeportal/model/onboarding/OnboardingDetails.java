@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 public class OnboardingDetails {
 
-    
     private PersonalDetailsDTO personalDetails;
     private List<AddressDTO> address;
     private List<EducationDTO> education;
@@ -21,5 +20,4 @@ public class OnboardingDetails {
     private PassportDetailsDTO passportDetails;
     private VisaDetailsDTO visaDetails;
     private OtherDetailsDTO otherDetails;
-    private String pageIdentifier;
 }

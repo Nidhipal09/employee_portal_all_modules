@@ -12,6 +12,4 @@ public class EmployeeDTO {
     private String mobileNumber;
     private Date dateOfBirth;
     private String email;
-    private String password;
-    private String status;
 }

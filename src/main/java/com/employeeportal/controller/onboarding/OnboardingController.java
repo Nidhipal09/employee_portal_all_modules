@@ -21,13 +21,13 @@ public class OnboardingController {
     private OnboardingService onboardingService;
 
     @PostMapping
-    public ResponseEntity<OnboardingDetails> fillOnboardingDetails(@RequestBody OnboardingDetails onboardingDetails) {
-        return new ResponseEntity<>(onboardingService.fillOnboardingDetails(onboardingDetails), HttpStatus.OK);
+    public ResponseEntity<OnboardingDetails> fillOnboardingDetails(@RequestBody OnboardingDetails onboardingDetails, @RequestParam String email, @RequestParam String pageIdentifier) {
+        return new ResponseEntity<>(onboardingService.fillOnboardingDetails(onboardingDetails, email, pageIdentifier), HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<OnboardingDetails> getOnboardingDetails(@RequestParam String email) {
-        OnboardingDetails onboardingDetails = onboardingService.getOnboardingDetails(email);
+    public ResponseEntity<OnboardingDetails> getOnboardingDetails(@RequestParam String email, @RequestParam String pageIdentifier) {
+        OnboardingDetails onboardingDetails = onboardingService.getOnboardingDetails(email, pageIdentifier);
         return new ResponseEntity<>(onboardingDetails, HttpStatus.ACCEPTED);
     }
 
