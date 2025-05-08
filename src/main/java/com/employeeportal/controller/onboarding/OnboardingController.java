@@ -25,10 +25,22 @@ public class OnboardingController {
         return new ResponseEntity<>(onboardingService.fillOnboardingDetails(onboardingDetails, email, pageIdentifier), HttpStatus.OK);
     }
 
+    // @PostMapping
+    // public ResponseEntity<?> fillOnboardingDetails(@RequestBody OnboardingDetails onboardingDetails, @RequestParam String email, @RequestParam String pageIdentifier) {
+    //     System.out.println("kdjfkjfkdjfkjkjfkjjjjjjjjjj"+ onboardingDetails.toString());
+    //     return new ResponseEntity<>(HttpStatus.OK);
+    // }
+
+    // @GetMapping
+    // public ResponseEntity<OnboardingDetails> getOnboardingDetails(@RequestParam String email, @RequestParam String pageIdentifier) {
+    //     OnboardingDetails onboardingDetails = onboardingService.getOnboardingDetails(email, pageIdentifier);
+    //     return new ResponseEntity<>(onboardingDetails, HttpStatus.ACCEPTED);
+    // }
+
     @GetMapping
-    public ResponseEntity<OnboardingDetails> getOnboardingDetails(@RequestParam String email, @RequestParam String pageIdentifier) {
-        OnboardingDetails onboardingDetails = onboardingService.getOnboardingDetails(email, pageIdentifier);
-        return new ResponseEntity<>(onboardingDetails, HttpStatus.ACCEPTED);
+    public ResponseEntity<?> getOnboardingDetails(@RequestParam String email, @RequestParam String pageIdentifier) {
+        System.out.println("kdjfkjfkdjfkjkjfkjjjjjjjjjj"+ email + pageIdentifier);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
 }
