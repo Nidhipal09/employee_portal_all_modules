@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import com.employeeportal.exception.AlreadyExistsException;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.model.*;
 import com.employeeportal.model.onboarding.PersonalDetails;
@@ -614,7 +615,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     public RegistrationResponseDTO registerEmployee(RegistrationRequestDTO employeeRegistrationDTO) {
 
         if (personalDetailsRepository.existsByPersonalEmail(employeeRegistrationDTO.getEmail()))
-            throw new NotFoundException("Email already exists, kindly use a different one.");
+            throw new AlreadyExistsException("Email already exists, kindly use a different one.");
         System.out.println("1111111111111");
         Employee employee = new Employee();
 
@@ -636,7 +637,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         employee.setEmail(employeeRegistrationDTO.getEmail());
         employee.setMobileNumber(employeeRegistrationDTO.getMobileNumber());
         employee.setDateOfBirth(employeeRegistrationDTO.getDateOfBirth());
-        employee.setStatus(EmployeeStatus.PENDING);
+        employee.setStatus(employeeRegistrationDTO.getStatus());
 
         PersonalDetails personalDetails = new PersonalDetails();
         personalDetails.setPersonalEmail(employee.getEmail());

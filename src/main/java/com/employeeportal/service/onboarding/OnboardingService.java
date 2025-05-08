@@ -1,9 +1,10 @@
 package com.employeeportal.service.onboarding;
 
+import com.employeeportal.dto.onboarding.OnboardingResponseDTO;
 import com.employeeportal.model.onboarding.OnboardingDetails;
 
 public interface OnboardingService {
-    OnboardingDetails fillOnboardingDetails(OnboardingDetails onboardingDetails, String email, String pageIdentifier);
+    OnboardingResponseDTO fillOnboardingDetails(OnboardingDetails onboardingDetails, String email, String pageIdentifier);
 
-    OnboardingDetails getOnboardingDetails(String email, String pageIdentifier);
+    OnboardingResponseDTO getOnboardingDetails(String email, String pageIdentifier);
 }

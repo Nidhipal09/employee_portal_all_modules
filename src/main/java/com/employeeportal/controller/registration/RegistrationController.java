@@ -3,6 +3,8 @@ package com.employeeportal.controller.registration;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
 import com.employeeportal.dto.registration.SendOtpDto;
@@ -40,7 +42,7 @@ public class RegistrationController {
 
     @PostMapping("/create")
     // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
-    public ResponseEntity<RegistrationResponseDTO> registerEmployee(@RequestBody RegistrationRequestDTO employeeRegistrationDTO) {
+    public ResponseEntity<RegistrationResponseDTO> registerEmployee(@RequestBody @Valid RegistrationRequestDTO employeeRegistrationDTO) {
         RegistrationResponseDTO registrationResponseDTO = registrationService.registerEmployee(employeeRegistrationDTO);
         return new ResponseEntity<>(registrationResponseDTO, HttpStatus.CREATED);
 

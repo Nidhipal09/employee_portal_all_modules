@@ -1,5 +1,8 @@
 package com.employeeportal.dto.onboarding;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import lombok.Data;
 
 @Data
@@ -8,6 +11,8 @@ public class PersonalDetailsDTO {
     private String gender;
     private String motherName;
     private String fatherName;
+
+    @Pattern(regexp = "\\d{10}", message = "Secondary mobile must be exactly 10 digits")
     private String secondaryMobile;
     private String fullName;
 

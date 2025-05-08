@@ -7,19 +7,24 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.employeeportal.dto.onboarding.AadharCardDetailsDTO;
 import com.employeeportal.dto.onboarding.AddressDTO;
 import com.employeeportal.dto.onboarding.EducationDTO;
 import com.employeeportal.dto.onboarding.IdentificationDetailsDTO;
+import com.employeeportal.dto.onboarding.OnboardingResponseDTO;
 import com.employeeportal.dto.onboarding.OtherDetailsDTO;
+import com.employeeportal.dto.onboarding.PanCardDetailsDTO;
 import com.employeeportal.dto.onboarding.PassportDetailsDTO;
 import com.employeeportal.dto.onboarding.PersonalDetailsDTO;
 import com.employeeportal.dto.onboarding.EmploymentHistoryDTO;
 import com.employeeportal.dto.onboarding.ProfessionalReferencesDTO;
 import com.employeeportal.dto.onboarding.RelativesDTO;
 import com.employeeportal.dto.onboarding.VisaDetailsDTO;
+import com.employeeportal.exception.FieldsMissingException;
 import com.employeeportal.model.onboarding.Address;
 import com.employeeportal.model.onboarding.Education;
 import com.employeeportal.model.onboarding.IdentificationDetails;
+import com.employeeportal.model.onboarding.IdentityType;
 import com.employeeportal.model.onboarding.OnboardingDetails;
 import com.employeeportal.model.onboarding.OtherDetails;
 import com.employeeportal.model.onboarding.PassportDetails;
@@ -82,13 +87,20 @@ public class OnboadingServiceImpl implements OnboardingService {
     private EmployeeRepository employeeRepository;
 
     @Override
-    public OnboardingDetails fillOnboardingDetails(OnboardingDetails onboardingDetails, String email,
+    public OnboardingResponseDTO fillOnboardingDetails(OnboardingDetails onboardingDetails, String email,
             String pageIdentifier) {
 
         Employee employee = employeeRepository.findByEmail(email);
         int employeeId = employee.getEmployeeId();
 
         if (pageIdentifier.equals("personalDetails")) {
+
+            if (onboardingDetails.getPersonalDetails().isNull() ||
+                    onboardingDetails.getAadharCardDetails().isNull() ||
+                    onboardingDetails.getPanCardDetails().isNull() ||
+                    onboardingDetails.getPassportDetails().isNull()) {
+                throw new FieldsMissingException("Please fill all the mandatory fields(Personal & Identification details) in the Personal Details form.");
+            }
 
             PersonalDetailsDTO personalDetailsDTO = onboardingDetails.getPersonalDetails();
             if (!personalDetailsDTO.isNull()) {
@@ -101,29 +113,72 @@ public class OnboadingServiceImpl implements OnboardingService {
                 personalDetailsRepository.save(personalDetailsFromDB);
             }
 
-            List<IdentificationDetailsDTO> identificationDetailsDTOs = onboardingDetails.getIdentificationDetails();
-            if (!identificationDetailsDTOs.isEmpty()) {
-                List<IdentificationDetails> identificationDetailsFromDB = identificationDetailsRepository.findByEmployeeEmployeeId(employeeId);
-                if (!identificationDetailsFromDB.isEmpty()) {
-                    identificationDetailsRepository.deleteAllByEmployeeId(employeeId);
+            // List<IdentificationDetailsDTO> identificationDetailsDTOs =
+            // onboardingDetails.getIdentificationDetails();
+            // if (!identificationDetailsDTOs.isEmpty()) {
+            // List<IdentificationDetails> identificationDetailsFromDB =
+            // identificationDetailsRepository.findByEmployeeEmployeeId(employeeId);
+            // if (!identificationDetailsFromDB.isEmpty()) {
+            // identificationDetailsRepository.deleteAllByEmployeeId(employeeId);
+            // }
+            // identificationDetailsDTOs.forEach(identificationDetailsDTO -> {
+            // IdentificationDetails identificationDetail =
+            // dtoToEntity(identificationDetailsDTO,
+            // IdentificationDetails.class);
+            // identificationDetail.setIdentificationNumber(identificationDetailsDTO.getAadharIdentificationNumber());
+            // identificationDetail.setIdentificationUrl(identificationDetailsDTO.getAadharIdentificationUrl());
+            // identificationDetail.setIdentityType(IdentityType.AADHAR);
+            // identificationDetail.setEmployee(employee);
+            // identificationDetailsRepository.save(identificationDetail);
+
+            // identificationDetail.setIdentificationNumber(identificationDetailsDTO.getPanIdentificationNumber());
+            // identificationDetail.setIdentificationUrl(identificationDetailsDTO.getPanIdentificationUrl());
+            // identificationDetail.setIdentityType(IdentityType.PAN);
+            // identificationDetail.setEmployee(employee);
+            // identificationDetailsRepository.save(identificationDetail);
+            // });
+            // }
+
+            AadharCardDetailsDTO aadharCardDetailsDTO = onboardingDetails.getAadharCardDetails();
+            if (!aadharCardDetailsDTO.isNull()) {
+                IdentificationDetails identificationDetailsFromDB = identificationDetailsRepository
+                        .findByEmployeeAndType(employeeId, "AADHAR");
+                if (identificationDetailsFromDB != null) {
+                    identificationDetailsRepository.deleteByEmployeeIdAndType(employeeId, "AADHAR");
                 }
-                identificationDetailsDTOs.forEach(identificationDetailsDTO -> {
-                    IdentificationDetails identificationDetail = dtoToEntity(identificationDetailsDTO,
-                            IdentificationDetails.class);
-                    identificationDetail.setEmployee(employee);
-                    identificationDetailsRepository.save(identificationDetail);
-                });
+                IdentificationDetails identificationDetails = new IdentificationDetails();
+                identificationDetails.setIdentificationNumber(aadharCardDetailsDTO.getAadharIdentificationNumber());
+                identificationDetails.setIdentificationUrl(aadharCardDetailsDTO.getAadharIdentificationUrl());
+                identificationDetails.setIdentityType(IdentityType.AADHAR);
+                identificationDetails.setEmployee(employee);
+                identificationDetailsRepository.save(identificationDetails);
+
+            }
+
+            PanCardDetailsDTO panCardDetailsDTO = onboardingDetails.getPanCardDetails();
+            if (!panCardDetailsDTO.isNull()) {
+                IdentificationDetails identificationDetailsFromDB = identificationDetailsRepository
+                        .findByEmployeeAndType(employeeId, "PAN");
+                if (identificationDetailsFromDB != null) {
+                    identificationDetailsRepository.deleteByEmployeeIdAndType(employeeId, "PAN");
+                }
+                IdentificationDetails identificationDetails = new IdentificationDetails();
+                identificationDetails.setIdentificationNumber(panCardDetailsDTO.getPanIdentificationNumber());
+                identificationDetails.setIdentificationUrl(panCardDetailsDTO.getPanIdentificationUrl());
+                identificationDetails.setIdentityType(IdentityType.PAN);
+                identificationDetails.setEmployee(employee);
+                identificationDetailsRepository.save(identificationDetails);
+
             }
 
             PassportDetailsDTO passportDetailsDTO = onboardingDetails.getPassportDetails();
             if (!passportDetailsDTO.isNull()) {
                 PassportDetails passportDetailsFromDB = passportDetailsRepository.findByEmployeeEmployeeId(employeeId);
-                if(passportDetailsFromDB != null) {
+                if (passportDetailsFromDB != null) {
                     passportDetailsFromDB.setPassportNumber(passportDetailsDTO.getPassportNumber());
                     passportDetailsFromDB.setPassportUrl(passportDetailsDTO.getPassportUrl());
                     passportDetailsRepository.save(passportDetailsFromDB);
-                }
-                else{
+                } else {
                     PassportDetails passportDetails = dtoToEntity(passportDetailsDTO, PassportDetails.class);
                     passportDetails.setEmployee(employee);
                     passportDetailsRepository.save(passportDetails);
@@ -137,6 +192,10 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("contact")) {
+
+            if (onboardingDetails.getAddress().isEmpty()) {
+                throw new FieldsMissingException("Please fill all the mandatory fields(Address details) in the Contact details form.");
+            }
 
             List<AddressDTO> addressDTOs = onboardingDetails.getAddress();
             if (!addressDTOs.isEmpty()) {
@@ -158,10 +217,15 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("education")) {
 
+            if (onboardingDetails.getEducation().isEmpty() ||
+                    onboardingDetails.getEmploymentHistories().isEmpty() ) {
+                throw new FieldsMissingException("Please fill all the mandatory fields(Education & Employment history details) in the Education details form.");
+            }
+
             List<EducationDTO> educationDTOs = onboardingDetails.getEducation();
             if (!educationDTOs.isEmpty()) {
                 List<Education> educationFromDB = educationRepository.findByEmployeeEmployeeId(employeeId);
-                if(!educationFromDB.isEmpty()) {
+                if (!educationFromDB.isEmpty()) {
                     educationRepository.deleteAllByEmployeeId(employeeId);
                 }
                 educationDTOs.forEach(educationDTO -> {
@@ -172,9 +236,10 @@ public class OnboadingServiceImpl implements OnboardingService {
             }
 
             List<EmploymentHistoryDTO> employmentHistoryDTOs = onboardingDetails.getEmploymentHistories();
-            if (!employmentHistoryDTOs.isEmpty()){
-                List<EmploymentHistory> employmentHistoryFromDB = employmentHistoryRepository.findByEmployeeEmployeeId(employeeId);
-                if(!employmentHistoryFromDB.isEmpty()) {
+            if (!employmentHistoryDTOs.isEmpty()) {
+                List<EmploymentHistory> employmentHistoryFromDB = employmentHistoryRepository
+                        .findByEmployeeEmployeeId(employeeId);
+                if (!employmentHistoryFromDB.isEmpty()) {
                     employmentHistoryRepository.deleteAllByEmployeeId(employeeId);
                 }
                 employmentHistoryDTOs.forEach(employmentHistoryDTO -> {
@@ -183,7 +248,6 @@ public class OnboadingServiceImpl implements OnboardingService {
                     employmentHistoryRepository.save(employmentHistory);
                 });
             }
-                
 
             fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
             fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
@@ -192,10 +256,18 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("professional")) {
 
+            if (onboardingDetails.getProfessionalReferences().isEmpty() ||
+                    onboardingDetails.getRelatives().isEmpty() ||
+                    onboardingDetails.getPassportDetails().isNull() ||
+                    onboardingDetails.getVisaDetails().isNull()) {
+                throw new FieldsMissingException("Please fill all the mandatory fields(Professional, Passport & Visa details) in the Professional details form.");
+            }
+
             List<ProfessionalReferencesDTO> professionalReferencesDTOs = onboardingDetails.getProfessionalReferences();
             if (!professionalReferencesDTOs.isEmpty()) {
-                List<ProfessionalReferences> professionalReferencesFromDB = professionalReferencesRepository.findByEmployeeEmployeeId(employeeId);
-                if(!professionalReferencesFromDB.isEmpty()) {
+                List<ProfessionalReferences> professionalReferencesFromDB = professionalReferencesRepository
+                        .findByEmployeeEmployeeId(employeeId);
+                if (!professionalReferencesFromDB.isEmpty()) {
                     professionalReferencesRepository.deleteAllByEmployeeId(employeeId);
                 }
                 professionalReferencesDTOs.forEach(professionalReferencesDTO -> {
@@ -209,7 +281,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             List<RelativesDTO> relativesDTOs = onboardingDetails.getRelatives();
             if (!relativesDTOs.isEmpty()) {
                 List<Relatives> relativesFromDB = relativesRepository.findByEmployeeEmployeeId(employeeId);
-                if(!relativesFromDB.isEmpty()) {
+                if (!relativesFromDB.isEmpty()) {
                     relativesRepository.deleteAllByEmployeeId(employeeId);
                 }
                 relativesDTOs.forEach(relativesDTO -> {
@@ -222,7 +294,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             PassportDetailsDTO passportDetailsDTO = onboardingDetails.getPassportDetails();
             if (!passportDetailsDTO.isNull()) {
                 PassportDetails passportDetailsFromDB = passportDetailsRepository.findByEmployeeEmployeeId(employeeId);
-                if(passportDetailsFromDB != null) {
+                if (passportDetailsFromDB != null) {
                     passportDetailsFromDB.setPassportNumber(passportDetailsDTO.getPassportNumber());
                     passportDetailsFromDB.setDateOfIssue(passportDetailsDTO.getDateOfIssue());
                     passportDetailsFromDB.setNationality(passportDetailsDTO.getNationality());
@@ -230,8 +302,7 @@ public class OnboadingServiceImpl implements OnboardingService {
                     passportDetailsFromDB.setCountryOfIssue(passportDetailsDTO.getCountryOfIssue());
                     passportDetailsFromDB.setValidUpto(passportDetailsDTO.getValidUpto());
                     passportDetailsRepository.save(passportDetailsFromDB);
-                }
-                else{
+                } else {
                     PassportDetails passportDetails = dtoToEntity(passportDetailsDTO, PassportDetails.class);
                     passportDetails.setEmployee(employee);
                     passportDetailsRepository.save(passportDetails);
@@ -241,7 +312,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             VisaDetailsDTO visaDetailsDTO = onboardingDetails.getVisaDetails();
             if (!visaDetailsDTO.isNull()) {
                 VisaDetails visaDetailsDB = visaDetailsRepository.findByEmployeeEmployeeId(employeeId);
-                if(visaDetailsDB != null) {
+                if (visaDetailsDB != null) {
                     visaDetailsDB.setCountry(visaDetailsDTO.getCountry());
                     visaDetailsDB.setPassportCopy(visaDetailsDTO.getPassportCopy());
                     visaDetailsDB.setPassportCopyUrl(visaDetailsDTO.getPassportCopyUrl());
@@ -249,8 +320,7 @@ public class OnboadingServiceImpl implements OnboardingService {
                     visaDetailsDB.setWorkPermitDetails(visaDetailsDTO.getWorkPermitDetails());
                     visaDetailsDB.setWorkPermitValidTill(visaDetailsDTO.getWorkPermitValidTill());
                     visaDetailsRepository.save(visaDetailsDB);
-                }
-                else{
+                } else {
                     VisaDetails visaDetails = dtoToEntity(visaDetailsDTO, VisaDetails.class);
                     visaDetails.setEmployee(employee);
                     visaDetailsRepository.save(visaDetails);
@@ -264,15 +334,18 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("other")) {
 
+            if (onboardingDetails.getOtherDetails().isNull()) {
+                throw new FieldsMissingException("Please fill all the mandatory fields(Other details) in the Other details form.");
+            }
+
             OtherDetailsDTO otherDetailsDTO = onboardingDetails.getOtherDetails();
             if (!otherDetailsDTO.isNull()) {
                 OtherDetails otherDetailsFromDB = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
-                if(otherDetailsFromDB != null) {
+                if (otherDetailsFromDB != null) {
                     otherDetailsFromDB.setHobbiesDeclaration(otherDetailsDTO.getHobbiesDeclaration());
                     otherDetailsFromDB.setIllnessDeclaration(otherDetailsDTO.getIllnessDeclaration());
                     otherDetailsRepository.save(otherDetailsFromDB);
-                }  
-                else{
+                } else {
                     OtherDetails otherDetails = dtoToEntity(otherDetailsDTO, OtherDetails.class);
                     otherDetails.setEmployee(employee);
                     otherDetailsRepository.save(otherDetails);
@@ -286,7 +359,7 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         }
 
-        return onboardingDetails;
+        return new OnboardingResponseDTO(onboardingDetails, employee.getStatus(), pageIdentifier);
 
     }
 
@@ -308,7 +381,7 @@ public class OnboadingServiceImpl implements OnboardingService {
     }
 
     @Override
-    public OnboardingDetails getOnboardingDetails(String email, String pageIdentifier) {
+    public OnboardingResponseDTO getOnboardingDetails(String email, String pageIdentifier) {
         OnboardingDetails onboardingDetails = new OnboardingDetails();
 
         Employee employee = employeeRepository.findByEmail(email);
@@ -316,7 +389,7 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         fetchOnboardingDetails(onboardingDetails, employeeId, pageIdentifier);
 
-        return onboardingDetails;
+        return new OnboardingResponseDTO(onboardingDetails, employee.getStatus(), pageIdentifier);
     }
 
     private void fetchOnboardingDetails(OnboardingDetails onboardingDetails,
@@ -325,11 +398,11 @@ public class OnboadingServiceImpl implements OnboardingService {
             PersonalDetails personalDetails = personalDetailsRepository.findByEmployeeEmployeeId(employeeId);
             if (personalDetails != null) {
                 PersonalDetailsDTO personalDetailsDTO = entityToDto(personalDetails, PersonalDetailsDTO.class);
-                
+
                 Employee employee = employeeRepository.findByEmployeeId(employeeId);
-                String firstName = employee.getFirstName()==null ? "" : employee.getFirstName()+" ";
-                String middleName = employee.getMiddleName()==null ? "" : employee.getMiddleName()+" ";
-                String lastName = employee.getLastName()==null ? "" : employee.getLastName();
+                String firstName = employee.getFirstName() == null ? "" : employee.getFirstName() + " ";
+                String middleName = employee.getMiddleName() == null ? "" : employee.getMiddleName() + " ";
+                String lastName = employee.getLastName() == null ? "" : employee.getLastName();
                 String fullName = firstName + middleName + lastName;
                 personalDetailsDTO.setFullName(fullName);
                 onboardingDetails.setPersonalDetails(personalDetailsDTO);
@@ -339,8 +412,21 @@ public class OnboadingServiceImpl implements OnboardingService {
             List<IdentificationDetails> identificationDetailsList = identificationDetailsRepository
                     .findByEmployeeEmployeeId(employeeId);
             if (!identificationDetailsList.isEmpty()) {
-                onboardingDetails.setIdentificationDetails(
-                        entityListToDtoList(identificationDetailsList, IdentificationDetailsDTO.class));
+                identificationDetailsList.forEach(identificationDetails -> {
+                    if (identificationDetails.getIdentityType() == IdentityType.AADHAR) {
+                        AadharCardDetailsDTO aadharCardDetailsDTO = new AadharCardDetailsDTO();
+                        aadharCardDetailsDTO
+                                .setAadharIdentificationNumber(identificationDetails.getIdentificationNumber());
+                        aadharCardDetailsDTO.setAadharIdentificationUrl(identificationDetails.getIdentificationUrl());
+                        onboardingDetails.setAadharCardDetails(aadharCardDetailsDTO);
+                    }
+                    if (identificationDetails.getIdentityType() == IdentityType.PAN) {
+                        PanCardDetailsDTO panCardDetailsDTO = new PanCardDetailsDTO();
+                        panCardDetailsDTO.setPanIdentificationNumber(identificationDetails.getIdentificationNumber());
+                        panCardDetailsDTO.setPanIdentificationUrl(identificationDetails.getIdentificationUrl());
+                        onboardingDetails.setPanCardDetails(panCardDetailsDTO);
+                    }
+                });
             }
 
             PassportDetails passportDetails = passportDetailsRepository.findByEmployeeEmployeeId(employeeId);

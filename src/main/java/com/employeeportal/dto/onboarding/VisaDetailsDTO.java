@@ -3,9 +3,13 @@ package com.employeeportal.dto.onboarding;
 import lombok.Data;
 import java.sql.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Data
 public class VisaDetailsDTO {
     private String workPermitDetails;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date workPermitValidTill;
     private String passportCopy;
     private String passportCopyUrl;

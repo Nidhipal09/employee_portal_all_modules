@@ -7,5 +7,6 @@ public enum EmployeeStatus {
     REJECTED,
     INACTIVE,
     ACTIVE,
-    TERMINATED
+    TERMINATED,
+    EMPLOYEE
 }

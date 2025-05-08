@@ -18,6 +18,7 @@ import com.employeeportal.model.onboarding.VisaDetails;
 
 import java.util.List;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -32,7 +33,7 @@ public class Employee {
     private String mobileNumber;
     private Date dateOfBirth;
     private String email;
-    private EmployeeStatus status;
+    private String status;
     
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private PersonalDetails personalDetails;
