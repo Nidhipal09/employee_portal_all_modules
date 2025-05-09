@@ -2,6 +2,7 @@ package com.employeeportal.dto.onboarding;
 
 import lombok.Data;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.validation.constraints.Pattern;
 
@@ -14,13 +15,13 @@ public class PassportDetailsDTO {
     @Pattern(regexp = "^[A-PR-WYa-pr-wy][0-9]{7}$", message = "Passport number must start with a letter followed by 7 digits")
     private String passportNumber;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dateOfIssue;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate dateOfIssue;
     private String placeOfIssue;
     private String countryOfIssue;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date validUpto;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate validUpto;
     private String nationality;
     private String passportUrl;
 

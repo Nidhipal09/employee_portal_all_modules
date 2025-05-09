@@ -2,6 +2,7 @@ package com.employeeportal.dto.onboarding;
 
 import lombok.Data;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -12,6 +13,6 @@ public class EmployeeOrganizationDetailsDTO {
     private String reportingManager;
     private String reportingHr;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date joiningDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate joiningDate;
 }

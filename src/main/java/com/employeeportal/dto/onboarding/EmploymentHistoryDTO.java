@@ -2,6 +2,7 @@ package com.employeeportal.dto.onboarding;
 
 import lombok.Data;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.validation.constraints.Pattern;
 
@@ -26,11 +27,11 @@ public class EmploymentHistoryDTO {
     private String managerContactNo;
     private String reasonsForLeaving;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date employmentPeriodFrom;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate employmentPeriodFrom;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date employmentPeriodTo;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate employmentPeriodTo;
     
     private String positionType;
     private String experienceCertificateUrl;

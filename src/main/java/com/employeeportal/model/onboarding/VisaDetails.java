@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -16,7 +17,7 @@ public class VisaDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long visaDetailsId;
     private String workPermitDetails;
-    private Date workPermitValidTill;
+    private LocalDate workPermitValidTill;
     private String passportCopy;
     private String passportCopyUrl;
     private String status; 

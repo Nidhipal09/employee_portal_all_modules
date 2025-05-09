@@ -1,9 +1,9 @@
 package com.employeeportal.dto.onboarding;
 
 import lombok.Data;
-import java.sql.Date;
+import java.time.LocalDate;
+
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -21,11 +21,11 @@ public class AddressDTO {
     private String city;
     private String country;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date stayFrom;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate stayFrom;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date stayTo;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate stayTo;
 
     @Pattern(regexp = "\\d{10}", message = "Emergency contact number must be exactly 10 digits and contain only numbers")
     private String emergencyContactNumber;

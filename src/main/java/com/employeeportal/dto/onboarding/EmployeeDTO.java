@@ -1,7 +1,9 @@
 package com.employeeportal.dto.onboarding;
 
 import lombok.Data;
-import java.sql.Date;
+import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Data
 public class EmployeeDTO {
@@ -10,6 +12,8 @@ public class EmployeeDTO {
     private String middleName;
     private String lastName;
     private String mobileNumber;
-    private Date dateOfBirth;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate dateOfBirth;
     private String email;
 }

@@ -2,6 +2,7 @@ package com.employeeportal.dto.onboarding;
 
 import lombok.Data;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class VisaDetailsDTO {
     private String workPermitDetails;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date workPermitValidTill;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate workPermitValidTill;
     private String passportCopy;
     private String passportCopyUrl;
     private String status;

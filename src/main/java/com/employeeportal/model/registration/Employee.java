@@ -31,7 +31,7 @@ public class Employee {
     private String middleName;
     private String lastName;
     private String mobileNumber;
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
     private String email;
     private String status;
     

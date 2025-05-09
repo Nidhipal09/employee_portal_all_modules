@@ -21,8 +21,8 @@ public class RegistrationRequestDTO {
     @Pattern(regexp = "\\d{10}", message = "Mobile number must be exactly 10 digits and contain only numbers")
     private String mobileNumber;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date dateOfBirth;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private LocalDate dateOfBirth;
 
     private String status;
 }

@@ -6,6 +6,7 @@ import javax.persistence.*;
 import com.employeeportal.model.registration.Employee;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -22,8 +23,8 @@ public class Address {
     private String state;
     private String city;
     private String country;
-    private Date stayFrom;
-    private Date stayTo;
+    private LocalDate stayFrom;
+    private LocalDate stayTo;
     private String emergencyContactNumber;
     private String emergencyContactNameAndRelationship;
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.persistence.*;
 
@@ -26,8 +27,8 @@ public class EmploymentHistory {
     private String managerEmail;
     private String managerContactNo;
     private String reasonsForLeaving;
-    private Date employmentPeriodFrom;
-    private Date employmentPeriodTo;
+    private LocalDate employmentPeriodFrom;
+    private LocalDate employmentPeriodTo;
     private String positionType;
     private String experienceCertificateUrl;
     private String relievingLetterUrl;

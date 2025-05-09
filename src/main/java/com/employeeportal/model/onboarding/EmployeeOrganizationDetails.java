@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -35,7 +36,7 @@ public class EmployeeOrganizationDetails {
     private String reportingHr;
 
     @Column(name = "joining_date")
-    private Date joiningDate;
+    private LocalDate joiningDate;
 
     @OneToOne
     @JsonIgnore

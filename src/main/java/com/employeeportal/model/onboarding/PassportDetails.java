@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -16,10 +17,10 @@ public class PassportDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int passportId;
     private String passportNumber;
-    private Date dateOfIssue;
+    private LocalDate dateOfIssue;
     private String placeOfIssue;
     private String countryOfIssue;
-    private Date validUpto;
+    private LocalDate validUpto;
     private String nationality;
     private String passportUrl;
 
