@@ -3,6 +3,7 @@ package com.employeeportal.dto.onboarding;
 import javax.validation.constraints.Pattern;
 
 import com.employeeportal.model.onboarding.IdentityType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
@@ -13,6 +14,7 @@ public class AadharCardDetailsDTO {
     private String aadharIdentificationNumber;
     private String aadharIdentificationUrl;
 
+    @JsonIgnore
     public boolean isNull() {
         return this == null ||
                (this.aadharIdentificationNumber == null &&

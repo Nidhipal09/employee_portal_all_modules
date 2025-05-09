@@ -64,6 +64,7 @@ public class AdminConfig {
         Employee user = new Employee();
         user.setFirstName(adminProperties.getUserName());
         user.setEmail(adminProperties.getEmailAddress());
+        user.setStatus("CREATED");
 
         user.setEmployeeReg(employeeReg);
         employeeReg.setEmployee(user);

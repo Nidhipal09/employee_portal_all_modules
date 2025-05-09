@@ -6,6 +6,7 @@ import java.sql.Date;
 import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 public class PassportDetailsDTO {
@@ -23,6 +24,7 @@ public class PassportDetailsDTO {
     private String nationality;
     private String passportUrl;
 
+    @JsonIgnore
     public boolean isNull() {
         return (this == null) ||
                 (this.getPassportNumber() == null &&

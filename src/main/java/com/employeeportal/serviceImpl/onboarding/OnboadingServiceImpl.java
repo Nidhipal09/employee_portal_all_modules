@@ -1,5 +1,6 @@
 package com.employeeportal.serviceImpl.onboarding;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import com.employeeportal.dto.onboarding.ProfessionalReferencesDTO;
 import com.employeeportal.dto.onboarding.RelativesDTO;
 import com.employeeportal.dto.onboarding.VisaDetailsDTO;
 import com.employeeportal.exception.FieldsMissingException;
+import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.model.onboarding.Address;
 import com.employeeportal.model.onboarding.Education;
 import com.employeeportal.model.onboarding.IdentificationDetails;
@@ -91,6 +93,14 @@ public class OnboadingServiceImpl implements OnboardingService {
             String pageIdentifier) {
 
         Employee employee = employeeRepository.findByEmail(email);
+        if (employee == null)
+            throw new NotFoundException("Employee not found with email: " + email);
+        if (!pageIdentifier.equals("personalDetails") && !pageIdentifier.equals("contact") &&
+                !pageIdentifier.equals("education") && !pageIdentifier.equals("professional") &&
+                !pageIdentifier.equals("other")) {
+            throw new NotFoundException("Invalid page identifier: " + pageIdentifier);
+        }
+
         int employeeId = employee.getEmployeeId();
 
         if (pageIdentifier.equals("personalDetails")) {
@@ -99,7 +109,8 @@ public class OnboadingServiceImpl implements OnboardingService {
                     onboardingDetails.getAadharCardDetails().isNull() ||
                     onboardingDetails.getPanCardDetails().isNull() ||
                     onboardingDetails.getPassportDetails().isNull()) {
-                throw new FieldsMissingException("Please fill all the mandatory fields(Personal & Identification details) in the Personal Details form.");
+                throw new FieldsMissingException(
+                        "Please fill all the mandatory fields(Personal & Identification details) in the Personal Details form.");
             }
 
             PersonalDetailsDTO personalDetailsDTO = onboardingDetails.getPersonalDetails();
@@ -110,6 +121,28 @@ public class OnboadingServiceImpl implements OnboardingService {
                 personalDetailsFromDB.setMotherName(personalDetailsDTO.getMotherName());
                 personalDetailsFromDB.setFatherName(personalDetailsDTO.getFatherName());
                 personalDetailsFromDB.setSecondaryMobile(personalDetailsDTO.getSecondaryMobile());
+
+                String firstName = employee.getFirstName() == null ? "" : employee.getFirstName() + " ";
+                String middleName = employee.getMiddleName() == null ? "" : employee.getMiddleName() + " ";
+                String lastName = employee.getLastName() == null ? "" : employee.getLastName();
+                String fullName = firstName + middleName + lastName;
+
+                if (!personalDetailsDTO.getFullName().equals(fullName)) {
+                    String[] parts = personalDetailsDTO.getFullName().split(" ");
+                    if (parts.length == 1) {
+                        employee.setFirstName(parts[0]);
+                    } else if (parts.length == 2) {
+                        employee.setFirstName(parts[0]);
+                        employee.setLastName(parts[1]);
+                    } else {
+                        employee.setFirstName(parts[0]);
+                        employee.setLastName(parts[parts.length - 1]);
+                        employee.setMiddleName(String.join(" ", Arrays.copyOfRange(parts, 1, parts.length - 1)));
+                    }
+                    employeeRepository.save(employee);
+                }
+
+                
                 personalDetailsRepository.save(personalDetailsFromDB);
             }
 
@@ -193,8 +226,9 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("contact")) {
 
-            if (onboardingDetails.getAddress().isEmpty()) {
-                throw new FieldsMissingException("Please fill all the mandatory fields(Address details) in the Contact details form.");
+            if (onboardingDetails.getAddress().isEmpty() || onboardingDetails.getAddress().size() == 1) {
+                throw new FieldsMissingException(
+                        "Please fill all the mandatory fields(Address details) in the Contact details form.");
             }
 
             List<AddressDTO> addressDTOs = onboardingDetails.getAddress();
@@ -218,8 +252,9 @@ public class OnboadingServiceImpl implements OnboardingService {
         } else if (pageIdentifier.equals("education")) {
 
             if (onboardingDetails.getEducation().isEmpty() ||
-                    onboardingDetails.getEmploymentHistories().isEmpty() ) {
-                throw new FieldsMissingException("Please fill all the mandatory fields(Education & Employment history details) in the Education details form.");
+                    onboardingDetails.getEmploymentHistories().isEmpty()) {
+                throw new FieldsMissingException(
+                        "Please fill all the mandatory fields(Education & Employment history details) in the Education details form.");
             }
 
             List<EducationDTO> educationDTOs = onboardingDetails.getEducation();
@@ -260,7 +295,8 @@ public class OnboadingServiceImpl implements OnboardingService {
                     onboardingDetails.getRelatives().isEmpty() ||
                     onboardingDetails.getPassportDetails().isNull() ||
                     onboardingDetails.getVisaDetails().isNull()) {
-                throw new FieldsMissingException("Please fill all the mandatory fields(Professional, Passport & Visa details) in the Professional details form.");
+                throw new FieldsMissingException(
+                        "Please fill all the mandatory fields(Professional, Passport & Visa details) in the Professional details form.");
             }
 
             List<ProfessionalReferencesDTO> professionalReferencesDTOs = onboardingDetails.getProfessionalReferences();
@@ -335,7 +371,8 @@ public class OnboadingServiceImpl implements OnboardingService {
         } else if (pageIdentifier.equals("other")) {
 
             if (onboardingDetails.getOtherDetails().isNull()) {
-                throw new FieldsMissingException("Please fill all the mandatory fields(Other details) in the Other details form.");
+                throw new FieldsMissingException(
+                        "Please fill all the mandatory fields(Other details) in the Other details form.");
             }
 
             OtherDetailsDTO otherDetailsDTO = onboardingDetails.getOtherDetails();
@@ -385,6 +422,14 @@ public class OnboadingServiceImpl implements OnboardingService {
         OnboardingDetails onboardingDetails = new OnboardingDetails();
 
         Employee employee = employeeRepository.findByEmail(email);
+        if (employee == null)
+            throw new NotFoundException("Employee not found with email: " + email);
+        if (!pageIdentifier.equals("personalDetails") && !pageIdentifier.equals("contact") &&
+                !pageIdentifier.equals("education") && !pageIdentifier.equals("professional") &&
+                !pageIdentifier.equals("other")) {
+            throw new NotFoundException("Invalid page identifier: " + pageIdentifier);
+        }
+
         int employeeId = employee.getEmployeeId();
 
         fetchOnboardingDetails(onboardingDetails, employeeId, pageIdentifier);

@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +30,7 @@ public class OnboardingController {
     @Autowired
     private OnboardingService onboardingService;
 
-    @PostMapping
+    @PutMapping
     public ResponseEntity<OnboardingResponseDTO> fillOnboardingDetails(@RequestBody @Valid OnboardingDetails onboardingDetails,
             @RequestParam String email, @RequestParam String pageIdentifier) {
         OnboardingResponseDTO onboardingResponseDTO = onboardingService.fillOnboardingDetails(onboardingDetails, email,

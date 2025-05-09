@@ -4,6 +4,7 @@ import lombok.Data;
 import java.sql.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 public class VisaDetailsDTO {
@@ -16,6 +17,7 @@ public class VisaDetailsDTO {
     private String status;
     private String country;
 
+    @JsonIgnore
     public boolean isNull() {
         return this == null ||
                (this.workPermitDetails == null &&
