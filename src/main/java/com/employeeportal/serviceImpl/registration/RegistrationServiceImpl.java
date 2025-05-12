@@ -654,7 +654,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         System.out.println(employeeRegistrationDTO.toString());
         employee.setMobileNumber(employeeRegistrationDTO.getMobileNumber());
         employee.setDateOfBirth(employeeRegistrationDTO.getDateOfBirth());
-        employee.setStatus(employeeRegistrationDTO.getStatus());
+        employee.setStatus("PENDING");
         String currentTimeStampString   = LocalDateTime.now().toString();
         employee.setCreatedTimeStamp(currentTimeStampString);
 
@@ -693,7 +693,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         return new RegistrationResponseDTO(employeeRegistrationDTO.getEmail(),
                 employeeRegistrationDTO.getFullName(), employeeRegistrationDTO.getMobileNumber(),
-                employeeRegistrationDTO.getDateOfBirth(), employeeRegistrationDTO.getStatus());
+                employeeRegistrationDTO.getDateOfBirth(), "PENDING");
     }
 
     @Override
