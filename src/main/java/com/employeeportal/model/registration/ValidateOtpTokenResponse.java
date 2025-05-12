@@ -1,13 +1,9 @@
 package com.employeeportal.model.registration;
 
+import lombok.Data;
+
+@Data
 public class ValidateOtpTokenResponse {
+    private String email;
     private String token;
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

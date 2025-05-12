@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.employeeportal.dto.onboarding.OnboardingResponseDTO;
+import com.employeeportal.dto.onboarding.PreviewResponseDTO;
 import com.employeeportal.model.onboarding.ErrorResponse;
 import com.employeeportal.model.onboarding.OnboardingDetails;
 import com.employeeportal.service.onboarding.OnboardingService;;
@@ -31,6 +33,7 @@ public class OnboardingController {
     private OnboardingService onboardingService;
 
     @PutMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OnboardingResponseDTO> fillOnboardingDetails(@RequestBody @Valid OnboardingDetails onboardingDetails,
             @RequestParam String email, @RequestParam String pageIdentifier) {
         OnboardingResponseDTO onboardingResponseDTO = onboardingService.fillOnboardingDetails(onboardingDetails, email,
@@ -39,10 +42,21 @@ public class OnboardingController {
     }
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OnboardingResponseDTO> getOnboardingDetails(@RequestParam String email,
             @RequestParam String pageIdentifier) {
         OnboardingResponseDTO onboardingResponseDTO = onboardingService.getOnboardingDetails(email, pageIdentifier);
         return new ResponseEntity<>(onboardingResponseDTO, HttpStatus.OK);
     }
 
+
+    @GetMapping("/preview")
+    @PreAuthorize("isAuthenticated()")
+    //for preview
+    public ResponseEntity<PreviewResponseDTO> getAllOnboardingDetails(@RequestParam String email) {
+        System.out.println("email" + email);
+        PreviewResponseDTO previewResponseDTO = onboardingService.getAllOnboardingDetails(email);
+        System.out.println(previewResponseDTO.toString());
+        return new ResponseEntity<>(previewResponseDTO, HttpStatus.OK);
+    }
 }

@@ -9,4 +9,8 @@ public class RegistrationResponseDTO {
 
     private String email;
     private String fullName;
+    private String mobileNumber;
+    private String dateOfBirth;
+    private String status;
+    private String token;
 }

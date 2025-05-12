@@ -19,6 +19,7 @@ import com.employeeportal.model.onboarding.VisaDetails;
 import java.util.List;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Entity
@@ -72,4 +73,14 @@ public class Employee {
     private EmployeeReg employeeReg;
 
 
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getDateOfBirth() {
+        if (dateOfBirth != null) {
+            return dateOfBirth.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        }
+        return null;
+    }
 }

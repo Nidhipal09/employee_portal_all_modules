@@ -7,6 +7,8 @@ import lombok.Data;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.*;
 
@@ -19,14 +21,14 @@ public class EmploymentHistory {
     private int employmentId;
     private String previousEmployerName;
     private String address;
-    private String telephoneNumber;
+    private String mobileNumber;
     private String employeeCode;
     private String designation;
     private String department;
     private String managerName;
     private String managerEmail;
     private String managerContactNo;
-    private String reasonsForLeaving;
+    private String reasonForLeaving;
     private LocalDate employmentPeriodFrom;
     private LocalDate employmentPeriodTo;
     private String positionType;
@@ -39,4 +41,22 @@ public class EmploymentHistory {
     @JsonIgnore
     @JoinColumn(name = "employeeId", nullable = false)
     private Employee employee;
+
+    public void setEmploymentPeriodFrom(String employmentPeriodFrom) {
+        this.employmentPeriodFrom = employmentPeriodFrom == null ? null
+                : LocalDate.parse(employmentPeriodFrom, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getEmploymentPeriodFrom() {
+        return (employmentPeriodFrom != null) ? employmentPeriodFrom.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+    }
+
+    public void setEmploymentPeriodTo(String employmentPeriodTo) {
+        this.employmentPeriodTo = employmentPeriodTo == null ? null
+                : LocalDate.parse(employmentPeriodTo, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getEmploymentPeriodTo() {
+        return (employmentPeriodTo != null) ? employmentPeriodTo.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+    }
 }

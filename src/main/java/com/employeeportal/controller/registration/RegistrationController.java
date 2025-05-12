@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.employeeportal.dto.registration.RegistrationRequest;
 import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
 import com.employeeportal.dto.registration.SendOtpDto;
@@ -41,21 +42,12 @@ public class RegistrationController {
     }
 
     @PostMapping("/create")
-    // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
     public ResponseEntity<RegistrationResponseDTO> registerEmployee(@RequestBody @Valid RegistrationRequestDTO employeeRegistrationDTO) {
         RegistrationResponseDTO registrationResponseDTO = registrationService.registerEmployee(employeeRegistrationDTO);
         return new ResponseEntity<>(registrationResponseDTO, HttpStatus.CREATED);
 
     }
-
-    // @PostMapping("/create")
-    // @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
-    // public void registerEmployee(@RequestBody NewClass newClass) {
-    //     System.out.println(newClass.toString());
-        // Employee employee = registrationService.registerEmployee(employeeRegistrationDTO);
-        // return new ResponseEntity<>(employee, HttpStatus.CREATED);
-
-    // }
 
     @PostMapping("/sendOtp")
     public ResponseEntity<?> sendOtpEmail(@RequestBody SendOtpDto email) {
@@ -65,7 +57,6 @@ public class RegistrationController {
     }
 
     @PostMapping("/validate")
-    // @PreAuthorize("hasAnyRole('ROLE_EMPLOYEE','ROLE_ADMIN')")
     public ResponseEntity<ResponseDTO> validateOtp(@RequestParam String email, @RequestParam String otp) {
         try {
             boolean isValid = registrationService.validateOtp(email, otp);
@@ -74,6 +65,7 @@ public class RegistrationController {
 
             if (isValid) {
                 validateResponse.setToken(jwtUtil.generateToken(email));
+                validateResponse.setEmail(email);
             } else {
                 throw new NotFoundException();
             }
@@ -83,6 +75,7 @@ public class RegistrationController {
                     true);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception ex) {
+            System.out.println("erroooooooooooooooooooooooooooooooor");
             ResponseDTO response = responseUtil.prepareResponseDto(null,
                     "Invalid or expired OTP",
                     HttpStatus.BAD_REQUEST.value(), 
@@ -98,13 +91,13 @@ public class RegistrationController {
     }
 
     @PostMapping("/resend-activation-link")
-    public ResponseEntity<String> resendActivationLink(@RequestParam String email) {
+    public ResponseEntity<String> resendActivationLink(@RequestParam String email, @RequestParam String token) {
 
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body("Email is required.");
         }
         try {
-            String activationLink = registrationService.resendActivationLink(email);
+            String activationLink = registrationService.resendActivationLink(email, token);
             return ResponseEntity.ok("Activation link resent successfully: " + activationLink);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

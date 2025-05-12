@@ -8,10 +8,13 @@ import com.employeeportal.exception.AlreadyExistsException;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.model.*;
 import com.employeeportal.model.onboarding.PersonalDetails;
+import com.employeeportal.model.onboarding.Role;
 import com.employeeportal.model.registration.Employee;
+import com.employeeportal.model.registration.EmployeeReg;
 import com.employeeportal.model.registration.EmployeeStatus;
 import com.employeeportal.repository.*;
 import com.employeeportal.repository.onboarding.PersonalDetailsRepository;
+import com.employeeportal.repository.onboarding.RoleRepository;
 import com.employeeportal.repository.registration.EmployeeRepository;
 import com.employeeportal.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -20,6 +23,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.employeeportal.config.EmailConstant;
+import com.employeeportal.dto.registration.RegistrationRequest;
 import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
 import com.employeeportal.service.EmailService;
@@ -31,6 +35,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final EmployeeRepository employeeRepository;
 
     private final PersonalDetailsRepository personalDetailsRepository;
+
+    private final RoleRepository roleRepository;
 
     private final JwtRepository jwtRepository;
     private final JwtUtil jwtUtil;
@@ -46,8 +52,10 @@ public class RegistrationServiceImpl implements RegistrationService {
     // BCryptPasswordEncoder();
     private final RedisTemplate<String, Object> redisTemplate;
     // private final DocumentCertificatesRepository documentCertificatesRepository;
-    // private final EducationalQualificationRepository educationalQualificationRepository;
-    // private final ProfessionalReferencesRepository professionalReferencesRepository;
+    // private final EducationalQualificationRepository
+    // educationalQualificationRepository;
+    // private final ProfessionalReferencesRepository
+    // professionalReferencesRepository;
     // private final EmploymentHistoryRepository employmentHistoryRepository;
     // private final PassportDetailsRepository passportDetailsRepository;
     // private final VisaStatusRepository visaStatusRepository;
@@ -61,7 +69,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     public RegistrationServiceImpl(EmployeeRepository employeeRepository, JwtRepository jwtRepository, JwtUtil jwtUtil,
             EmailService emailService, PasswordEncoder passwordEncoder, RedisTemplate<String, Object> redisTemplate,
-            PersonalDetailsRepository personalDetailsRepository) {
+            PersonalDetailsRepository personalDetailsRepository, RoleRepository roleRepository) {
         this.employeeRepository = employeeRepository;
         this.personalDetailsRepository = personalDetailsRepository;
         this.jwtRepository = jwtRepository;
@@ -69,6 +77,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.redisTemplate = redisTemplate;
+        this.roleRepository = roleRepository;
     }
 
     // @Override
@@ -577,39 +586,40 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     // @Override
     // public String resendOtp(String email) {
-    //     // Check if an OTP exists in Redis
-    //     String cachedOtp = (String) redisTemplate.opsForValue().get(email);
+    // // Check if an OTP exists in Redis
+    // String cachedOtp = (String) redisTemplate.opsForValue().get(email);
 
-    //     if (cachedOtp != null) {
-    //         // If OTP exists, send the same OTP again
-    //         try {
-    //             emailService.sendEmail(email, cachedOtp, EmailConstant.SIGN_UP_OTP_SUBJECT,
-    //                     EmailConstant.SIGN_UP_OTP_TEMPLATE_NAME);
-    //             return cachedOtp; // Return the existing OTP
-    //         } catch (Exception e) {
-    //             // Handle email sending error
-    //             throw new RuntimeException("Failed to send OTP email. Please try again later.");
-    //         }
-    //     } else {
-    //         // Generate a new OTP if it does not exist or has expired
-    //         return sendOtpEmail(email);
-    //     }
+    // if (cachedOtp != null) {
+    // // If OTP exists, send the same OTP again
+    // try {
+    // emailService.sendEmail(email, cachedOtp, EmailConstant.SIGN_UP_OTP_SUBJECT,
+    // EmailConstant.SIGN_UP_OTP_TEMPLATE_NAME);
+    // return cachedOtp; // Return the existing OTP
+    // } catch (Exception e) {
+    // // Handle email sending error
+    // throw new RuntimeException("Failed to send OTP email. Please try again
+    // later.");
+    // }
+    // } else {
+    // // Generate a new OTP if it does not exist or has expired
+    // return sendOtpEmail(email);
+    // }
     // }
 
     // @Override
     // public Employee findByEmail(String email) {
 
-    //     return employeeRepository.findByEmail(email);
+    // return employeeRepository.findByEmail(email);
     // }
 
     // @Override
     // public void createUser(Employee user) {
-    //     // Log the user details before saving
-    //     System.out.println("Saving User: " + user);
+    // // Log the user details before saving
+    // System.out.println("Saving User: " + user);
 
-    //     // Encode the password
-    //     user.setPassword(passwordEncoder.encode(user.getPassword()));
-    //     employeeRepository.save(user); // Save the user to the database
+    // // Encode the password
+    // user.setPassword(passwordEncoder.encode(user.getPassword()));
+    // employeeRepository.save(user); // Save the user to the database
     // }
 
     public RegistrationResponseDTO registerEmployee(RegistrationRequestDTO employeeRegistrationDTO) {
@@ -635,6 +645,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         employee.setEmail(employeeRegistrationDTO.getEmail());
+        System.out.println(employeeRegistrationDTO.toString());
         employee.setMobileNumber(employeeRegistrationDTO.getMobileNumber());
         employee.setDateOfBirth(employeeRegistrationDTO.getDateOfBirth());
         employee.setStatus(employeeRegistrationDTO.getStatus());
@@ -645,14 +656,29 @@ public class RegistrationServiceImpl implements RegistrationService {
         employee.setPersonalDetails(personalDetails);
         personalDetails.setEmployee(employee);
 
+        EmployeeReg employeeReg = new EmployeeReg();
+        employeeReg.setEmail(employeeRegistrationDTO.getEmail());
+        employeeReg.setPassword("temporary password");
+
+        Role role = roleRepository.findByRoleName("EMPLOYEE");
+        employeeReg.setRole(role);
+
+        employee.setEmployeeReg(employeeReg);
+        employeeReg.setEmployee(employee);
+
         employeeRepository.save(employee);
-        
+
         System.out.println("22222222222222");
 
-        emailService.sendEmail(employee.getEmail(), "",
+        String token = UUID.randomUUID().toString();
+
+        emailService.sendEmail(employee.getEmail(), token,
                 EmailConstant.SIGN_UP_LINK_SUBJECT, EmailConstant.SIGN_UP_LINK_TEMPLATE_NAME);
 
-        return new RegistrationResponseDTO(employee.getEmail(), fullName);
+        return new RegistrationResponseDTO(employeeRegistrationDTO.getEmail(),
+                employeeRegistrationDTO.getFullName(), employeeRegistrationDTO.getMobileNumber(),
+                employeeRegistrationDTO.getDateOfBirth(), employeeRegistrationDTO.getStatus(),
+                token); 
     }
 
     @Override
@@ -661,36 +687,41 @@ public class RegistrationServiceImpl implements RegistrationService {
         Random random = new Random();
         String otp = String.valueOf(100000 + random.nextInt(900000));
 
-        emailService.sendEmail(email, otp, EmailConstant.SIGN_UP_OTP_SUBJECT,
-                EmailConstant.SIGN_UP_OTP_TEMPLATE_NAME);
-
         // Store OTP in Redis with 2-minute expiration
         redisTemplate.opsForValue().set(email, otp, OTP_EXPIRATION_TIME,
                 TimeUnit.MINUTES);
+
+        System.out.println("ooooooooooooooooooooooooooooooooooooooo" + redisTemplate.opsForValue().get(email));
+
+        emailService.sendEmail(email, otp, EmailConstant.SIGN_UP_OTP_SUBJECT,
+                EmailConstant.SIGN_UP_OTP_TEMPLATE_NAME);
 
         return otp; // Return the OTP
     }
 
     public boolean validateOtp(String email, String otp) {
         String cachedOtp = (String) redisTemplate.opsForValue().get(email);
-        System.out.println("Retrieved OTP from Redis for " + email + ": " + cachedOtp+" "+otp);
+        System.out.println("Retrieved OTP from Redis for " + email + ": " + cachedOtp + " " + otp);
 
         if (cachedOtp != null && cachedOtp.equals(otp)) {
+            System.out.println("jkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk" + redisTemplate.opsForValue().get(email));
             redisTemplate.delete(email);
+            System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjj" + redisTemplate.opsForValue().get(email));
+
             return true;
         }
         return false;
     }
 
     @Override
-    public String resendActivationLink(String email) {
+    public String resendActivationLink(String email, String token) {
 
         // Generate a new activation link with a unique identifier or timestamp
         String activationLink = EmailConstant.ACTIVE_SIGNUP_LINK + "?email=" + email + "&timestamp="
                 + System.currentTimeMillis();
 
         // Sending the email with the activation link
-        emailService.sendEmail(email, "", EmailConstant.RESEND_LINK_SUBJECT,
+        emailService.sendEmail(email, token, EmailConstant.RESEND_LINK_SUBJECT,
                 EmailConstant.SIGN_UP_LINK_TEMPLATE_NAME);
 
         return activationLink; // Return the new activation link or a success message

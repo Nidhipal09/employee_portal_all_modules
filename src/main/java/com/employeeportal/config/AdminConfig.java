@@ -46,11 +46,10 @@ public class AdminConfig {
         if (!employeeRegRepository.existsByEmail(adminProperties.getEmailAddress())) {
             saveAdminDetails();
         }
+        saveRoleDetails();
     }
 
-
     private void saveAdminDetails() {
-
 
         Role role = new Role();
         role.setRoleName("SUPER_ADMIN");
@@ -60,7 +59,7 @@ public class AdminConfig {
         employeeReg.setEmail(adminProperties.getEmailAddress());
         employeeReg.setPassword(passwordEncoder.encode(adminProperties.getPassword()));
         employeeReg.setRole(role);
-        
+
         Employee user = new Employee();
         user.setFirstName(adminProperties.getUserName());
         user.setEmail(adminProperties.getEmailAddress());
@@ -68,18 +67,29 @@ public class AdminConfig {
 
         user.setEmployeeReg(employeeReg);
         employeeReg.setEmployee(user);
-        
+
         employeeRepository.save(user);
-
-        
-
-        
-        
 
         EmployeeOrganizationDetails employeeOrganizationDetails = new EmployeeOrganizationDetails();
         employeeOrganizationDetails.setEmployee(user);
         employeeOrganizationDetails.setRole(role);
         employeeOrganizationDetailsRepository.save(employeeOrganizationDetails);
 
+    }
+
+    private void saveRoleDetails(){
+        Role roleAdmin = roleRepository.findByRoleName("ADMIN");
+        if(roleAdmin == null) {
+            roleAdmin = new Role();
+            roleAdmin.setRoleName("ADMIN");
+            roleRepository.save(roleAdmin);
+        }
+
+        Role roleEmployee = roleRepository.findByRoleName("EMPLOYEE");
+        if(roleEmployee == null) {
+            roleEmployee = new Role();
+            roleEmployee.setRoleName("EMPLOYEE");
+            roleRepository.save(roleEmployee);
+        }
     }
 }

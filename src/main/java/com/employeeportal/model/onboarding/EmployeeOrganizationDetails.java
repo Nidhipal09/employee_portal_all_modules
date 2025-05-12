@@ -9,6 +9,8 @@ import lombok.Data;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Data
 @Entity
@@ -43,4 +45,14 @@ public class EmployeeOrganizationDetails {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    public void setJoiningDate(String joiningDate) {
+
+        this.joiningDate = joiningDate == null ? null
+                : LocalDate.parse(joiningDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    // Custom getter returning String
+    public String getJoiningDate() {
+        return (joiningDate != null) ? joiningDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+    }
 }

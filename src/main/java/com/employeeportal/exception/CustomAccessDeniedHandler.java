@@ -15,7 +15,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        ApiErrorResponse error = new ApiErrorResponse(accessDeniedException.getMessage() + ApplicationConstant.INVALID_TOKEN_MESSAGE, HttpStatus.FORBIDDEN.value());
+        ApiErrorResponse error = new ApiErrorResponse(accessDeniedException.getMessage() +": "+ ApplicationConstant.AUTHENTICATED_BUT_NOT_AUTHORIZED, HttpStatus.FORBIDDEN.value());
         response.setContentType("application/json");
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.getWriter().write(ResponseUtil.toJson(error));

@@ -5,10 +5,12 @@ import com.employeeportal.model.*;
 import com.employeeportal.model.login.ResponseDTO;
 import com.employeeportal.service.login.LoginService;
 import com.employeeportal.util.ResponseUtil;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -25,19 +27,21 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> verifyLogin(@RequestBody LoginRequest authRequest) {
+    public ResponseEntity<ResponseDTO> verifyLogin(@RequestBody @Valid LoginRequest authRequest) {
         try {
             System.out.println("ssssssssssssssssssssssssssssss"+authRequest.toString());
             LoginResponse loginResponse = loginService.verifyLogin(authRequest);
 
             // Prepare and send the response
-            ResponseDTO response = responseUtil.prepareResponseDto(
-                    loginResponse,
-                    loginResponse.getRoleName() + ApplicationConstant.LOGIN_RESPONSE,
-                    HttpStatus.OK.value(),
-                    true);
+            // ResponseDTO response = responseUtil.prepareResponseDto(
+            //         loginResponse,
+            //         loginResponse.getRoleName() + ApplicationConstant.LOGIN_RESPONSE,
+            //         HttpStatus.OK.value(),
+            //         true);
 
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            ResponseDTO responseDTO = new ResponseDTO(loginResponse.getRoleName() + ApplicationConstant.LOGIN_RESPONSE, HttpStatus.OK.value(), loginResponse, true);
+
+            return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 
         } catch (BadCredentialsException ex) {
             ResponseDTO response = responseUtil.prepareResponseDto(
@@ -72,6 +76,7 @@ public class LoginController {
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
         try {
+            System.out.println("newPassword kkkkkkkkkkkkkkkkkkkkk : " + newPassword);
             loginService.resetPassword(token, newPassword);
             return ResponseEntity.ok("Password reset successfully.");
         } catch (Exception e) {

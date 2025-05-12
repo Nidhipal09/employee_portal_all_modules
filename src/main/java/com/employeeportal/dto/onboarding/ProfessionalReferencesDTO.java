@@ -6,6 +6,8 @@ import lombok.Data;
 
 @Data
 public class ProfessionalReferencesDTO {
+
+    @Pattern(regexp = "^[A-Za-z ]+$", message = "Name must contain only letters and spaces")
     private String name;
     private String designation;
 

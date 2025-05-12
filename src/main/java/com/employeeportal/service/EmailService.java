@@ -40,7 +40,7 @@ public class EmailService {
 
             Context ctx = new Context();
             ctx.setVariable("otpCode", randomNumber);
-            ctx.setVariable("activateLink", EmailConstant.ACTIVE_SIGNUP_LINK + "?email=" + email + "&timestamp=" + System.currentTimeMillis());
+            ctx.setVariable("activateLink", EmailConstant.ACTIVE_SIGNUP_LINK + "?email=" + email + "?token="+ randomNumber +"&timestamp=" + System.currentTimeMillis());
             ctx.setVariable("resetLink", EmailConstant.RESET_PASSWORD_LINK + "?token=" + randomNumber); 
 
             helper.setText(templateEngine.process(templateName, ctx), true);

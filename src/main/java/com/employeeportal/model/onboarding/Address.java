@@ -7,6 +7,7 @@ import com.employeeportal.model.registration.Employee;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Entity
@@ -22,7 +23,6 @@ public class Address {
     private String zip;
     private String state;
     private String city;
-    private String country;
     private LocalDate stayFrom;
     private LocalDate stayTo;
     private String emergencyContactNumber;
@@ -32,4 +32,19 @@ public class Address {
     @JoinColumn(name = "employeeId", nullable = false)
     private Employee employee;
 
+    public void setStayFrom(String stayFrom) {
+        this.stayFrom = stayFrom == null ? null : LocalDate.parse(stayFrom, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public void setStayTo(String stayTo) {
+        this.stayTo = stayTo == null ? null : LocalDate.parse(stayTo, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getStayFrom() {
+        return stayFrom == null ? null : stayFrom.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getStayTo() {
+        return stayTo == null ? null : stayTo.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
 }

@@ -31,9 +31,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String principal) throws UsernameNotFoundException {
         EmployeeReg employeeReg = employeeRegRepository.findByEmail(principal.trim());
+        if (employeeReg == null) {
+            System.out.println("UserDetailsServiceImplllllllllllllllll: " + employeeReg);
+
+        }
         if (employeeReg != null) {
-            return new User(employeeReg.getEmail(), employeeReg.getPassword(), new ArrayList<>());
-        }  else {
+            System.out.println("lllllllllllllllllllllllllll" + employeeReg.getEmail() + "  " + employeeReg.getPassword());
+            return new User(employeeReg.getEmail(), employeeReg.getPassword(), employeeReg.getAuthorities());
+        } else {
             throw new EmployeeNotFoundException();
 
         }

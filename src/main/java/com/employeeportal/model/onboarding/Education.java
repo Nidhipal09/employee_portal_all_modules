@@ -5,7 +5,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 import javax.persistence.*;
+
+import org.apache.tomcat.jni.Local;
 
 @Data
 @Entity
@@ -15,12 +19,15 @@ public class Education {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int educationId;
     private String degreeName;
-    private String subject;
-    private String passingYear;
+    private String institutionName;
+    private String location;
+    private String fieldOfStudy;
     private String rollNumber;
-    private String gradeOrPercentage;
-    private String passingCertificate;
-    private String degreeCertificate;
+    private String gradeOrCGPA;
+    private LocalDate fromDate;
+    private LocalDate toDate;
+    private String passingCertificateUrl;
+    private String degreeCertificateUrl;
 
     @ManyToOne
     @JsonIgnore

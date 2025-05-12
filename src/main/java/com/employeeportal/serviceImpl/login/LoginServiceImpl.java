@@ -27,6 +27,7 @@ import com.employeeportal.config.ApplicationConstant;
 import com.employeeportal.config.EmailConstant;
 import com.employeeportal.service.EmailService;
 import com.employeeportal.service.login.LoginService;
+import com.employeeportal.serviceImpl.logout.TokenBlacklistService;
 
 @Service
 public class LoginServiceImpl implements LoginService {
@@ -48,8 +49,10 @@ public class LoginServiceImpl implements LoginService {
     // BCryptPasswordEncoder();
     private final RedisTemplate<String, Object> redisTemplate;
     // private final DocumentCertificatesRepository documentCertificatesRepository;
-    // private final EducationalQualificationRepository educationalQualificationRepository;
-    // private final ProfessionalReferencesRepository professionalReferencesRepository;
+    // private final EducationalQualificationRepository
+    // educationalQualificationRepository;
+    // private final ProfessionalReferencesRepository
+    // professionalReferencesRepository;
     // private final EmploymentHistoryRepository employmentHistoryRepository;
     // private final PassportDetailsRepository passportDetailsRepository;
     // private final VisaStatusRepository visaStatusRepository;
@@ -67,10 +70,14 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private TokenBlacklistService tokenBlacklistService;
+
     private static final long OTP_EXPIRATION_TIME = 2; // 2 minutes
 
     @Autowired
-    public LoginServiceImpl(EmployeeRepository employeeRepository, JwtRepository jwtRepository, JwtUtil jwtUtil, EmailService emailService, PasswordEncoder passwordEncoder, RedisTemplate<String, Object> redisTemplate) {
+    public LoginServiceImpl(EmployeeRepository employeeRepository, JwtRepository jwtRepository, JwtUtil jwtUtil,
+            EmailService emailService, PasswordEncoder passwordEncoder, RedisTemplate<String, Object> redisTemplate) {
         this.employeeRepository = employeeRepository;
         this.jwtRepository = jwtRepository;
         this.jwtUtil = jwtUtil;
@@ -85,9 +92,9 @@ public class LoginServiceImpl implements LoginService {
         EmployeeReg employeeReg = employeeRegRepository.findByEmail(loginRequest.getEmail());
 
         if (employeeReg == null) {
-            throw new BadCredentialsException(ApplicationConstant.AUTHORIZATION_EMAIL_ERROR);
+            throw new BadCredentialsException(ApplicationConstant.AUTHENTICATION_EMAIL_FAILED);
         }
-        System.out.println(employeeReg.getPassword()+" "+loginRequest.getPassword());
+        System.out.println(employeeReg.getPassword() + " " + loginRequest.getPassword());
         // Check if the email matches and validate the password
 
         System.out.println("111");
@@ -103,7 +110,11 @@ public class LoginServiceImpl implements LoginService {
 
         // Fetch full name from Employee table
         Employee employee = employeeRepository.findByEmployeeId(employeeReg.getEmployee().getEmployeeId());
-        String fullName = employee.getFirstName() + " " + employee.getMiddleName() + " " + employee.getLastName();
+        String firstName = employee.getFirstName() == null ? "" : employee.getFirstName() + " ";
+        String middleName = employee.getMiddleName() == null ? "" : employee.getMiddleName() + " ";
+        String lastName = employee.getLastName() == null ? "" : employee.getLastName();
+        String fullName = firstName + middleName + lastName;
+        fullName = fullName.trim();
         loginResponse.setFullName(fullName);
 
         // Fetch role name from Role table using role ID from
@@ -148,6 +159,7 @@ public class LoginServiceImpl implements LoginService {
 
     public void logout(String token) {
 
+        tokenBlacklistService.blacklistToken(token);
         Claims claims = jwtUtil.getClaims(token);
         JwtEntity jwtEntity = jwtRepository.findByJtiAndValidSession(claims.getId(), true);
         if (jwtEntity != null) {
