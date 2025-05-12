@@ -744,12 +744,24 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public String resendActivationLink(String email, String token) {
 
+        Employee employee = employeeRepository.findByEmail(email);
+        String currentTimeStampString   = LocalDateTime.now().toString();
+
+        // String token = UUID.randomUUID().toString();
+        String tokenString = email + "|" + employee.getMobileNumber() + "|"
+                + currentTimeStampString;
+        String encryptedToken = null;
+        try {
+            encryptedToken = EncryptionUtil.encrypt(tokenString);
+        } catch (Exception e) {
+            throw new EncryptionException("Error encrypting token: " + e.getMessage());
+        }
+
         // Generate a new activation link with a unique identifier or timestamp
-        String activationLink = EmailConstant.ACTIVE_SIGNUP_LINK + "?email=" + email + "&timestamp="
-                + System.currentTimeMillis();
+        String activationLink = EmailConstant.ACTIVE_SIGNUP_LINK + "?token=" + encryptedToken;
 
         // Sending the email with the activation link
-        emailService.sendEmail(email, token, EmailConstant.RESEND_LINK_SUBJECT,
+        emailService.sendEmail(email, encryptedToken, EmailConstant.RESEND_LINK_SUBJECT,
                 EmailConstant.SIGN_UP_LINK_TEMPLATE_NAME);
 
         return activationLink; // Return the new activation link or a success message
