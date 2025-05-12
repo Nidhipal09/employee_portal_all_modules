@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.employeeportal.config.EmailConstant;
 import com.employeeportal.dto.onboarding.AadharCardDetailsDTO;
 import com.employeeportal.dto.onboarding.AddressDTO;
 import com.employeeportal.dto.onboarding.EducationDTO;
@@ -592,5 +593,14 @@ public class OnboadingServiceImpl implements OnboardingService {
 
     @Value("${admin.email}")
     private String adminEmail;
+
+    @Override
+    public GeneralResponse notifyAdmin(String email) {
+
+        emailService.sendEmail(adminEmail, null,
+                EmailConstant.VERIFY_EMPLOYEE_DETAILS_SUBJECT, EmailConstant.VERIFY_EMPLOYEE_DETAILS_TEMPLATE, email);
+
+        return new GeneralResponse("An email is successfully sent to Admin to verify employee "+ email+" details.");        
+    }
 
 }

@@ -20,4 +20,7 @@ public interface EmailConstant {
    String PREVIEW_DETAILS_SUBJECT = "kindly check my preview details";
    String PREVIEW_DETAILS_TEMPLATE_NAME = "preview-details";
    String PREVIEW_DETAILS_LINK ="http://localhost:3000/primary/preview/";
+
+   String VERIFY_EMPLOYEE_DETAILS_SUBJECT = "Verify employee details";
+   String VERIFY_EMPLOYEE_DETAILS_TEMPLATE = "Verify-employee-details.html";
 }

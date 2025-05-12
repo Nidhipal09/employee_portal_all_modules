@@ -50,6 +50,28 @@ public class EmailService {
             throw new MailSendException(e.getMessage());
         }
     }
+
+    public void sendEmail(String email, String randomNumber, String subject, String templateName, String other) {
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(emailProperties.getUserName());
+            helper.setTo(email);
+
+            Context ctx = new Context();
+            ctx.setVariable("otpCode", randomNumber);
+            ctx.setVariable("activateLink", EmailConstant.ACTIVE_SIGNUP_LINK + "?token="+ randomNumber);
+            ctx.setVariable("resetLink", EmailConstant.RESET_PASSWORD_LINK + "?token=" + randomNumber); 
+            ctx.setVariable("employeeEmail", other);
+
+            helper.setText(templateEngine.process(templateName, ctx), true);
+            helper.setSubject(subject);
+            emailSender.send(message);
+        } catch (Exception e) {
+            throw new MailSendException(e.getMessage());
+        }
+    }
+
     public void sendRegistrationEmail(String email, String password, String subject, String templateName) {
         try {
             MimeMessage message = emailSender.createMimeMessage();

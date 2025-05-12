@@ -36,7 +36,8 @@ public class OnboardingController {
 
     @PutMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<OnboardingResponseDTO> fillOnboardingDetails(@RequestBody @Valid OnboardingDetails onboardingDetails,
+    public ResponseEntity<OnboardingResponseDTO> fillOnboardingDetails(
+            @RequestBody @Valid OnboardingDetails onboardingDetails,
             @RequestParam String email, @RequestParam String pageIdentifier) {
         OnboardingResponseDTO onboardingResponseDTO = onboardingService.fillOnboardingDetails(onboardingDetails, email,
                 pageIdentifier);
@@ -51,10 +52,9 @@ public class OnboardingController {
         return new ResponseEntity<>(onboardingResponseDTO, HttpStatus.OK);
     }
 
-
     @GetMapping("/preview")
     @PreAuthorize("isAuthenticated()")
-    //for preview
+    // for preview
     public ResponseEntity<PreviewResponseDTO> getAllOnboardingDetails(@RequestParam String email) {
         System.out.println("email" + email);
         PreviewResponseDTO previewResponseDTO = onboardingService.getAllOnboardingDetails(email);
@@ -62,12 +62,19 @@ public class OnboardingController {
         return new ResponseEntity<>(previewResponseDTO, HttpStatus.OK);
     }
 
-    
+    @GetMapping("/notifyAdmin")
+    @PreAuthorize("isAuthenticated()")
+    // for preview
+    public ResponseEntity<GeneralResponse> notifyAdmin(@RequestParam String email) {
+        GeneralResponse generalResponse = onboardingService.notifyAdmin(email);
+        return new ResponseEntity<>(generalResponse, HttpStatus.OK);
+    }
 
-    //Update employee status
+    // Update employee status
     @PutMapping("/updateStatus")
     @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
-    public ResponseEntity<GeneralResponse> updateEmployeeStatus(@RequestParam String email, @RequestBody UpdateStatusRequest updateStatusRequest) {
+    public ResponseEntity<GeneralResponse> updateEmployeeStatus(@RequestParam String email,
+            @RequestBody UpdateStatusRequest updateStatusRequest) {
         String message = onboardingService.updateEmployeeStatus(email, updateStatusRequest.getStatus());
         return new ResponseEntity<>(new GeneralResponse(message), HttpStatus.OK);
     }

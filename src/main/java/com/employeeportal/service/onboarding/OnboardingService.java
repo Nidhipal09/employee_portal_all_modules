@@ -1,5 +1,6 @@
 package com.employeeportal.service.onboarding;
 
+import com.employeeportal.dto.onboarding.GeneralResponse;
 import com.employeeportal.dto.onboarding.OnboardingResponseDTO;
 import com.employeeportal.dto.onboarding.PreviewResponseDTO;
 import com.employeeportal.dto.onboarding.UpdateStatusRequest;
@@ -12,6 +13,7 @@ public interface OnboardingService {
 
     PreviewResponseDTO getAllOnboardingDetails(String email);
 
+    GeneralResponse notifyAdmin(String email);
 
     String updateEmployeeStatus(String email, String status);
 }
