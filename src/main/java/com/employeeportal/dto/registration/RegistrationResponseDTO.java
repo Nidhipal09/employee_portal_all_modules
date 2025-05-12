@@ -12,5 +12,4 @@ public class RegistrationResponseDTO {
     private String mobileNumber;
     private String dateOfBirth;
     private String status;
-    private String token;
 }

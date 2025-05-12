@@ -9,6 +9,8 @@ import com.employeeportal.dto.registration.RegistrationRequest;
 import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
 import com.employeeportal.dto.registration.SendOtpDto;
+import com.employeeportal.dto.registration.TokenDto;
+import com.employeeportal.dto.registration.ValidateTokenResponseDto;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.exception.ResourceNotFoundException;
 import com.employeeportal.model.NewClass;
@@ -47,6 +49,15 @@ public class RegistrationController {
         RegistrationResponseDTO registrationResponseDTO = registrationService.registerEmployee(employeeRegistrationDTO);
         return new ResponseEntity<>(registrationResponseDTO, HttpStatus.CREATED);
 
+    }
+
+    @PostMapping("/validateToken")
+    public ResponseEntity<ValidateTokenResponseDto> validateToken(@RequestBody TokenDto tokenDto) {
+        ValidateTokenResponseDto validateTokenResponseDto = registrationService.validateToken(tokenDto.getToken());
+        if(validateTokenResponseDto.isTokenValid()) {
+            return new ResponseEntity<>(validateTokenResponseDto, HttpStatus.UNAUTHORIZED);
+        }
+            return new ResponseEntity<>(validateTokenResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/sendOtp")

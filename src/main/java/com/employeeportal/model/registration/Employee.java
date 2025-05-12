@@ -35,6 +35,7 @@ public class Employee {
     private LocalDate dateOfBirth;
     private String email;
     private String status;
+    private String createdTimeStamp;
     
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private PersonalDetails personalDetails;

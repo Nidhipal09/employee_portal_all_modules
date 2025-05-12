@@ -1,10 +1,13 @@
 package com.employeeportal.serviceImpl.registration;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.employeeportal.exception.AlreadyExistsException;
+import com.employeeportal.exception.EncryptionException;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.model.*;
 import com.employeeportal.model.onboarding.PersonalDetails;
@@ -16,6 +19,7 @@ import com.employeeportal.repository.*;
 import com.employeeportal.repository.onboarding.PersonalDetailsRepository;
 import com.employeeportal.repository.onboarding.RoleRepository;
 import com.employeeportal.repository.registration.EmployeeRepository;
+import com.employeeportal.util.EncryptionUtil;
 import com.employeeportal.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,7 @@ import com.employeeportal.config.EmailConstant;
 import com.employeeportal.dto.registration.RegistrationRequest;
 import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
+import com.employeeportal.dto.registration.ValidateTokenResponseDto;
 import com.employeeportal.service.EmailService;
 import com.employeeportal.service.registration.RegistrationService;
 
@@ -649,6 +654,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         employee.setMobileNumber(employeeRegistrationDTO.getMobileNumber());
         employee.setDateOfBirth(employeeRegistrationDTO.getDateOfBirth());
         employee.setStatus(employeeRegistrationDTO.getStatus());
+        String currentTimeStampString   = LocalDateTime.now().toString();
+        employee.setCreatedTimeStamp(currentTimeStampString);
 
         PersonalDetails personalDetails = new PersonalDetails();
         personalDetails.setPersonalEmail(employee.getEmail());
@@ -670,15 +677,22 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         System.out.println("22222222222222");
 
-        String token = UUID.randomUUID().toString();
+        // String token = UUID.randomUUID().toString();
+        String tokenString = employeeRegistrationDTO.getEmail() + "|" + employeeRegistrationDTO.getMobileNumber() + "|"
+                + currentTimeStampString;
+        String encryptedToken = null;
+        try {
+            encryptedToken = EncryptionUtil.encrypt(tokenString);
+        } catch (Exception e) {
+            throw new EncryptionException("Error encrypting token: " + e.getMessage());
+        }
 
-        emailService.sendEmail(employee.getEmail(), token,
+        emailService.sendEmail(employee.getEmail(), encryptedToken,
                 EmailConstant.SIGN_UP_LINK_SUBJECT, EmailConstant.SIGN_UP_LINK_TEMPLATE_NAME);
 
         return new RegistrationResponseDTO(employeeRegistrationDTO.getEmail(),
                 employeeRegistrationDTO.getFullName(), employeeRegistrationDTO.getMobileNumber(),
-                employeeRegistrationDTO.getDateOfBirth(), employeeRegistrationDTO.getStatus(),
-                token); 
+                employeeRegistrationDTO.getDateOfBirth(), employeeRegistrationDTO.getStatus());
     }
 
     @Override
@@ -725,6 +739,48 @@ public class RegistrationServiceImpl implements RegistrationService {
                 EmailConstant.SIGN_UP_LINK_TEMPLATE_NAME);
 
         return activationLink; // Return the new activation link or a success message
+    }
+
+    @Override
+    public ValidateTokenResponseDto validateToken(String token) {
+        // Decrypt the token
+        String decryptedToken;
+        try {
+            decryptedToken = EncryptionUtil.decrypt(token);
+        } catch (Exception e) {
+            throw new EncryptionException("Error decrypting token: " + e.getMessage());
+        }
+
+        // Split the decrypted token to get email and mobile number
+        String[] parts = decryptedToken.split("\\|");
+        if (parts.length != 3) {
+            return new ValidateTokenResponseDto(false, "Invalid token"); // Invalid token format
+        }
+
+        String email = parts[0];
+        String mobileNumber = parts[1];
+        String timeStamp = parts[2];
+
+        Employee employee = employeeRepository.findByEmail(email);
+        String employeeMobileNumber = employee.getMobileNumber();
+        String employeeCreatedTimeStamp = employee.getCreatedTimeStamp();
+
+        if(mobileNumber!=employeeMobileNumber || timeStamp!=employeeCreatedTimeStamp) {
+            return new ValidateTokenResponseDto(false, "Invalid token"); // Invalid token format
+        }
+
+        LocalDateTime employeeDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(timeStamp, formatter);
+
+        Duration duration = Duration.between(dateTime, employeeDateTime);
+        long days = duration.toDays();
+        if(days > 1) {
+            return new ValidateTokenResponseDto(false, "Token expired"); // Token expired
+        }
+
+        // Check if the email and mobile number match the expected values
+        return new ValidateTokenResponseDto(true, "Valid token");
     }
 
     // @Override

@@ -5,6 +5,7 @@ import java.util.List;
 import com.employeeportal.dto.registration.RegistrationRequest;
 import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
+import com.employeeportal.dto.registration.ValidateTokenResponseDto;
 import com.employeeportal.model.registration.Employee;
 
 public interface RegistrationService {
@@ -16,6 +17,8 @@ public interface RegistrationService {
 	boolean validateOtp(String email, String otp);
 	
 	String resendActivationLink(String email, String token);
+
+	ValidateTokenResponseDto validateToken(String token);
 	
 	// Employee findByEmail(String email);
 
