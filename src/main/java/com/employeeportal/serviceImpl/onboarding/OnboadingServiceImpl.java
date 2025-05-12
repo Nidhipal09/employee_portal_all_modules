@@ -108,11 +108,20 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         if (pageIdentifier.equals("personalDetails")) {
 
-            if (onboardingDetails.getPersonalDetails().isNull() ||
-                    onboardingDetails.getAadharCardDetails().isNull() ||
-                    onboardingDetails.getPanCardDetails().isNull()) {
+            // if (onboardingDetails.getPersonalDetails().isNull() ||
+            // onboardingDetails.getAadharCardDetails().isNull() ||
+            // onboardingDetails.getPanCardDetails().isNull()) {
+            // throw new FieldsMissingException(
+            // "Please fill all the mandatory fields(Personal & Identification details) in
+            // the Personal Details form.");
+            // }
+
+            if (onboardingDetails.getPersonalDetails() == null ||
+                    onboardingDetails.getAadharCardDetails() == null ||
+                    onboardingDetails.getPanCardDetails() == null ||
+                    onboardingDetails.getPassportDetails() == null) {
                 throw new FieldsMissingException(
-                        "Please fill all the mandatory fields(Personal & Identification details) in the Personal Details form.");
+                        "Please add all the mandatory fields(Personal & Identification details) in the Personal Details form.");
             }
 
             PersonalDetailsDTO personalDetailsDTO = onboardingDetails.getPersonalDetails();
@@ -202,6 +211,11 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("contact")) {
 
+            if (onboardingDetails.getAddress() == null) {
+                throw new FieldsMissingException(
+                        "Please add all the mandatory fields(address details) in the Contact Details form.");
+            }
+
             List<AddressDTO> addressDTOs = onboardingDetails.getAddress();
             if (addressDTOs.isEmpty()) {
                 throw new FieldsMissingException(
@@ -226,6 +240,11 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("education")) {
+
+            if (onboardingDetails.getEducation() == null || onboardingDetails.getEmploymentHistories() == null) {
+                throw new FieldsMissingException(
+                        "Please add all the mandatory fields(education & employment histories details) in the Education Details form.");
+            }
 
             if (onboardingDetails.getEducation().isEmpty()) {
                 throw new FieldsMissingException(
@@ -265,6 +284,12 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("professional")) {
+
+            if (onboardingDetails.getProfessionalReferences() == null || onboardingDetails.getRelatives() == null 
+            || onboardingDetails.getPassportDetails() == null || onboardingDetails.getVisaDetails() == null) {
+                throw new FieldsMissingException(
+                        "Please add all the mandatory fields(Professional references, relatives, passport & visa details) in the Professional Details form.");
+            }
 
             List<ProfessionalReferencesDTO> professionalReferencesDTOs = onboardingDetails.getProfessionalReferences();
             if (!professionalReferencesDTOs.isEmpty()) {
@@ -336,6 +361,12 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "other");
 
         } else if (pageIdentifier.equals("other")) {
+
+            if (onboardingDetails.getOtherDetails() == null) {
+                throw new FieldsMissingException(
+                        "Please add all the mandatory fields(Other details) in the Other details form.");
+            }
+
 
             OtherDetailsDTO otherDetailsDTO = onboardingDetails.getOtherDetails();
             if (!otherDetailsDTO.isNull()) {
@@ -522,7 +553,8 @@ public class OnboadingServiceImpl implements OnboardingService {
         String fullName = firstName + middleName + lastName;
         fullName = fullName.trim();
 
-        EmployeeDTO employeeDTO = new EmployeeDTO(fullName, employee.getMobileNumber(), employee.getDateOfBirth(), employee.getEmail());
+        EmployeeDTO employeeDTO = new EmployeeDTO(fullName, employee.getMobileNumber(), employee.getDateOfBirth(),
+                employee.getEmail());
 
         System.out.println("onboardingDetails");
         System.out.println(onboardingDetails);
