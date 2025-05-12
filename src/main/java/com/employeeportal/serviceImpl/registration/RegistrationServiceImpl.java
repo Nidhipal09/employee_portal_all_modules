@@ -751,6 +751,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             throw new EncryptionException("Error decrypting token: " + e.getMessage());
         }
 
+        System.out.println(token+" "+decryptedToken);
         // Split the decrypted token to get email and mobile number
         String[] parts = decryptedToken.split("\\|");
         if (parts.length != 3) {
@@ -765,12 +766,13 @@ public class RegistrationServiceImpl implements RegistrationService {
         String employeeMobileNumber = employee.getMobileNumber();
         String employeeCreatedTimeStamp = employee.getCreatedTimeStamp();
 
-        if(mobileNumber!=employeeMobileNumber || timeStamp!=employeeCreatedTimeStamp) {
+        if(!mobileNumber.equals(employeeMobileNumber) || !timeStamp.equals(employeeCreatedTimeStamp)) {
             return new ValidateTokenResponseDto(false, "Invalid token"); // Invalid token format
         }
 
+        System.out.println("hereeeeeeeeeeeeeeeeeeeeeeeee");
         LocalDateTime employeeDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
         LocalDateTime dateTime = LocalDateTime.parse(timeStamp, formatter);
 
         Duration duration = Duration.between(dateTime, employeeDateTime);
