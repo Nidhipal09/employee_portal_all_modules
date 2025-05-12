@@ -2,7 +2,9 @@ package com.employeeportal.model.onboarding;
 
 import javax.persistence.*;
 
+import com.employeeportal.exception.EncryptionException;
 import com.employeeportal.model.registration.Employee;
+import com.employeeportal.util.EncryptionUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
@@ -30,4 +32,35 @@ public class IdentificationDetails {
     @JsonIgnore
     @JoinColumn(name = "employeeId", nullable = false)
     private Employee employee;
+
+    public void setIdentificationNumber(String identificationNumber) {
+        if (identificationNumber != null) {
+            try {
+                String encryptedPassword = EncryptionUtil.encrypt(identificationNumber);
+                this.identificationNumber = encryptedPassword;
+            } catch (Exception e) {
+                if(this.identityType == IdentityType.PAN) {
+                    throw new EncryptionException("Error encrypting Pan card number");
+                }else{
+                    throw new EncryptionException("Error encrypting Aadhaar card number");
+                }
+            }
+        }
+
+    }
+
+    public String getIdentificationNumber() {
+        if(this.identificationNumber == null) {
+            return null;
+        }
+        try {
+            return EncryptionUtil.decrypt(this.identificationNumber);
+        } catch (Exception e) {
+            if(this.identityType == IdentityType.PAN) {
+                throw new EncryptionException("Error decrypting Pan card number");
+            }else{
+                throw new EncryptionException("Error decrypting Aadhaar card number");
+            }
+        }
+    }
 }
