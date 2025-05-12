@@ -2,6 +2,7 @@ package com.employeeportal.service.onboarding;
 
 import com.employeeportal.dto.onboarding.OnboardingResponseDTO;
 import com.employeeportal.dto.onboarding.PreviewResponseDTO;
+import com.employeeportal.dto.onboarding.UpdateStatusRequest;
 import com.employeeportal.model.onboarding.OnboardingDetails;
 
 public interface OnboardingService {
@@ -10,4 +11,7 @@ public interface OnboardingService {
     OnboardingResponseDTO getOnboardingDetails(String email, String pageIdentifier);
 
     PreviewResponseDTO getAllOnboardingDetails(String email);
+
+
+    String updateEmployeeStatus(String email, String status);
 }

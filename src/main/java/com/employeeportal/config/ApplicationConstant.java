@@ -9,10 +9,10 @@ public interface ApplicationConstant {
     String AUTHENTICATED_BUT_NOT_AUTHORIZED = "User is not authorized to perform this action";
     String EDIT_ERROR_RESPONSE_MSG = "Record Not Updated Successfully";
     String EDIT_SUCCESS_RESPONSE_MSG = "Record Updated Successfully";
-   String AUTHORIZATION_ERROR = "Authorization failed: No user with these details found";
-   String AUTHORIZATION_EMAIL_ERROR = "Please enter a valid email address";
-   String AUTHORIZATION_PASSWORD_ERROR = "Invalid password, please try again";
-   String AUTHENTICATION_EMAIL_FAILED = "Invalid email: email with this address does not exist";
+    String AUTHORIZATION_ERROR = "Authorization failed: No user with these details found";
+    String AUTHORIZATION_EMAIL_ERROR = "Please enter a valid email address";
+    String AUTHORIZATION_PASSWORD_ERROR = "Invalid password, please try again";
+    String AUTHENTICATION_EMAIL_FAILED = "Invalid email: email with this address does not exist";
     String HEADERS = "Authorization";
     String AUTH_TYPE = "Bearer ";
     String EXIST_EMAIL = "This email is already exists";
@@ -34,6 +34,6 @@ public interface ApplicationConstant {
     String GET_SUCCESS_RESPONSE_MSG = "Record Found Successfully";
     String CREATED_SUCCESS_RESPONSE_MSG = "Record Created Successfully";
     String DELETE_SUCCESS_RESPONSE_MSG = "Record Deleted Successfully";
-    String DELETE_FAILURE_RESPONSE_MSG =  "Record Not Deleted Successfully";
+    String DELETE_FAILURE_RESPONSE_MSG = "Record Not Deleted Successfully";
     String EXISTS_ERROR_RESPONSE_MSG = "Record already exists";
 }

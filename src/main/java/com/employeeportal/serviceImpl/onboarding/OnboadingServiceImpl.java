@@ -1,11 +1,14 @@
 package com.employeeportal.serviceImpl.onboarding;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.employeeportal.dto.onboarding.AadharCardDetailsDTO;
@@ -20,8 +23,10 @@ import com.employeeportal.dto.onboarding.PassportDetailsDTO;
 import com.employeeportal.dto.onboarding.PersonalDetailsDTO;
 import com.employeeportal.dto.onboarding.PreviewResponseDTO;
 import com.employeeportal.dto.onboarding.EmploymentHistoryDTO;
+import com.employeeportal.dto.onboarding.GeneralResponse;
 import com.employeeportal.dto.onboarding.ProfessionalReferencesDTO;
 import com.employeeportal.dto.onboarding.RelativesDTO;
+import com.employeeportal.dto.onboarding.UpdateStatusRequest;
 import com.employeeportal.dto.onboarding.VisaDetailsDTO;
 import com.employeeportal.exception.EncryptionException;
 import com.employeeportal.exception.FieldsMissingException;
@@ -50,7 +55,10 @@ import com.employeeportal.repository.onboarding.ProfessionalReferencesRepository
 import com.employeeportal.repository.onboarding.RelativesRepository;
 import com.employeeportal.repository.onboarding.VisaDetailsRepository;
 import com.employeeportal.repository.registration.EmployeeRepository;
+import com.employeeportal.service.EmailService;
 import com.employeeportal.service.onboarding.OnboardingService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class OnboadingServiceImpl implements OnboardingService {
@@ -90,6 +98,9 @@ public class OnboadingServiceImpl implements OnboardingService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public OnboardingResponseDTO fillOnboardingDetails(OnboardingDetails onboardingDetails, String email,
@@ -285,8 +296,8 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("professional")) {
 
-            if (onboardingDetails.getProfessionalReferences() == null || onboardingDetails.getRelatives() == null 
-            || onboardingDetails.getPassportDetails() == null || onboardingDetails.getVisaDetails() == null) {
+            if (onboardingDetails.getProfessionalReferences() == null || onboardingDetails.getRelatives() == null
+                    || onboardingDetails.getPassportDetails() == null || onboardingDetails.getVisaDetails() == null) {
                 throw new FieldsMissingException(
                         "Please add all the mandatory fields(Professional references, relatives, passport & visa details) in the Professional Details form.");
             }
@@ -366,7 +377,6 @@ public class OnboadingServiceImpl implements OnboardingService {
                 throw new FieldsMissingException(
                         "Please add all the mandatory fields(Other details) in the Other details form.");
             }
-
 
             OtherDetailsDTO otherDetailsDTO = onboardingDetails.getOtherDetails();
             if (!otherDetailsDTO.isNull()) {
@@ -556,14 +566,31 @@ public class OnboadingServiceImpl implements OnboardingService {
         EmployeeDTO employeeDTO = new EmployeeDTO(fullName, employee.getMobileNumber(), employee.getDateOfBirth(),
                 employee.getEmail());
 
-        System.out.println("onboardingDetails");
-        System.out.println(onboardingDetails);
-        System.out.println("employeeDTO");
-        System.out.println(employeeDTO);
-        System.out.println("status");
-        System.out.println(employee.getStatus());
+        ObjectMapper mapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = mapper.writeValueAsString(onboardingDetails);
+        } catch (JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        int sizeInBytes = json.getBytes(StandardCharsets.UTF_8).length;
+
+        System.out.println("Sizeeeeeeeeeeeeeeeeeeeeeeeeee: " + sizeInBytes + " bytes");
 
         return new PreviewResponseDTO(onboardingDetails, employeeDTO, employee.getStatus());
     }
+
+    @Override
+    public String updateEmployeeStatus(String email, String status) {
+
+        Employee employee = employeeRepository.findByEmail(email);
+        employee.setStatus(status);
+
+        return "For employee " + email + ", status is updated from PENDING to " + status + " succeesully.";
+    }
+
+    @Value("${admin.email}")
+    private String adminEmail;
 
 }

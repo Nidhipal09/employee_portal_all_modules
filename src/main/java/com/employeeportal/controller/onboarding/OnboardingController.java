@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.employeeportal.dto.onboarding.GeneralResponse;
 import com.employeeportal.dto.onboarding.OnboardingResponseDTO;
 import com.employeeportal.dto.onboarding.PreviewResponseDTO;
+import com.employeeportal.dto.onboarding.UpdateStatusRequest;
 import com.employeeportal.model.onboarding.ErrorResponse;
 import com.employeeportal.model.onboarding.OnboardingDetails;
 import com.employeeportal.service.onboarding.OnboardingService;;
@@ -58,5 +60,15 @@ public class OnboardingController {
         PreviewResponseDTO previewResponseDTO = onboardingService.getAllOnboardingDetails(email);
         System.out.println(previewResponseDTO.toString());
         return new ResponseEntity<>(previewResponseDTO, HttpStatus.OK);
+    }
+
+    
+
+    //Update employee status
+    @PutMapping("/updateStatus")
+    @PreAuthorize("hasAnyRole('ROLE_SUPER_ADMIN','ROLE_ADMIN')")
+    public ResponseEntity<GeneralResponse> updateEmployeeStatus(@RequestParam String email, @RequestBody UpdateStatusRequest updateStatusRequest) {
+        String message = onboardingService.updateEmployeeStatus(email, updateStatusRequest.getStatus());
+        return new ResponseEntity<>(new GeneralResponse(message), HttpStatus.OK);
     }
 }
