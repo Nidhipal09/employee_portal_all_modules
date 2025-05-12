@@ -10,6 +10,7 @@ import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
 import com.employeeportal.dto.registration.SendOtpDto;
 import com.employeeportal.dto.registration.TokenDto;
+import com.employeeportal.dto.registration.ValidateOtpDto;
 import com.employeeportal.dto.registration.ValidateTokenResponseDto;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.exception.ResourceNotFoundException;
@@ -68,15 +69,15 @@ public class RegistrationController {
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<ResponseDTO> validateOtp(@RequestParam String email, @RequestParam String otp) {
+    public ResponseEntity<ResponseDTO> validateOtp(@RequestParam String token, @RequestParam String otp) {
         try {
-            boolean isValid = registrationService.validateOtp(email, otp);
-            System.out.println("sssssssssssssssssssssssss"+isValid);
+            ValidateOtpDto validateOtpDto = registrationService.validateOtp(token, otp);
             ValidateOtpTokenResponse validateResponse = new ValidateOtpTokenResponse();
 
-            if (isValid) {
-                validateResponse.setToken(jwtUtil.generateToken(email));
-                validateResponse.setEmail(email);
+            
+            if (validateOtpDto.isOtpValid()) {
+                validateResponse.setToken(jwtUtil.generateToken(validateOtpDto.getEmail()));
+                validateResponse.setEmail(validateOtpDto.getEmail());
             } else {
                 throw new NotFoundException();
             }

@@ -30,6 +30,7 @@ import com.employeeportal.config.EmailConstant;
 import com.employeeportal.dto.registration.RegistrationRequest;
 import com.employeeportal.dto.registration.RegistrationRequestDTO;
 import com.employeeportal.dto.registration.RegistrationResponseDTO;
+import com.employeeportal.dto.registration.ValidateOtpDto;
 import com.employeeportal.dto.registration.ValidateTokenResponseDto;
 import com.employeeportal.service.EmailService;
 import com.employeeportal.service.registration.RegistrationService;
@@ -713,7 +714,20 @@ public class RegistrationServiceImpl implements RegistrationService {
         return otp; // Return the OTP
     }
 
-    public boolean validateOtp(String email, String otp) {
+    public ValidateOtpDto validateOtp(String token, String otp) {
+        String decryptedToken;
+        try {
+            decryptedToken = EncryptionUtil.decrypt(token);
+        } catch (Exception e) {
+            throw new EncryptionException("Error decrypting token: " + e.getMessage());
+        }
+
+        System.out.println(token+" "+decryptedToken);
+        // Split the decrypted token to get email and mobile number
+        String[] parts = decryptedToken.split("\\|");
+
+        String email = parts[0];
+
         String cachedOtp = (String) redisTemplate.opsForValue().get(email);
         System.out.println("Retrieved OTP from Redis for " + email + ": " + cachedOtp + " " + otp);
 
@@ -722,9 +736,9 @@ public class RegistrationServiceImpl implements RegistrationService {
             redisTemplate.delete(email);
             System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjj" + redisTemplate.opsForValue().get(email));
 
-            return true;
+            return new ValidateOtpDto(email, true);
         }
-        return false;
+        return new ValidateOtpDto(email, false);
     }
 
     @Override
