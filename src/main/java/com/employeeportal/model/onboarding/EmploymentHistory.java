@@ -34,7 +34,11 @@ public class EmploymentHistory {
     private String positionType;
     private String experienceCertificateUrl;
     private String relievingLetterUrl;
-    private String lastMonthSalarySlipUrl;
+    // private String lastMonthSalarySlipUrl;
+    private String lastMonthSalarySlip1Url;
+    private String lastMonthSalarySlip2Url;
+    private String lastMonthSalarySlip3Url;
+    
     private String appointmentLetterUrl;
 
     @ManyToOne

@@ -22,6 +22,6 @@ public class EducationDTO {
     
     @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$", message = "Date must be in the format dd/MM/yyyy")
     private String toDate;
-    private String passingCertificateUrl;
+    // private String passingCertificateUrl;
     private String degreeCertificateUrl;
 }

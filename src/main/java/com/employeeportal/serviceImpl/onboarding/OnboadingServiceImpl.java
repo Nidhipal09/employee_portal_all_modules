@@ -266,11 +266,6 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("professional")) {
 
-            if (onboardingDetails.getProfessionalReferences().isEmpty()) {
-                throw new FieldsMissingException(
-                        "Please fill all the mandatory fields(Professional, Passport & Visa details) in the Professional details form.");
-            }
-
             List<ProfessionalReferencesDTO> professionalReferencesDTOs = onboardingDetails.getProfessionalReferences();
             if (!professionalReferencesDTOs.isEmpty()) {
                 List<ProfessionalReferences> professionalReferencesFromDB = professionalReferencesRepository

@@ -26,7 +26,7 @@ public class Education {
     private String gradeOrCGPA;
     private LocalDate fromDate;
     private LocalDate toDate;
-    private String passingCertificateUrl;
+    // private String passingCertificateUrl;
     private String degreeCertificateUrl;
 
     @ManyToOne
