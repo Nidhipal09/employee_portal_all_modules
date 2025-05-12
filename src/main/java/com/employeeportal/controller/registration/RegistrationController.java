@@ -103,13 +103,13 @@ public class RegistrationController {
     }
 
     @PostMapping("/resend-activation-link")
-    public ResponseEntity<String> resendActivationLink(@RequestParam String email, @RequestParam String token) {
+    public ResponseEntity<String> resendActivationLink(@RequestParam String email ) {
 
         if (email == null || email.isEmpty()) {
             return ResponseEntity.badRequest().body("Email is required.");
         }
         try {
-            String activationLink = registrationService.resendActivationLink(email, token);
+            String activationLink = registrationService.resendActivationLink(email);
             return ResponseEntity.ok("Activation link resent successfully: " + activationLink);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

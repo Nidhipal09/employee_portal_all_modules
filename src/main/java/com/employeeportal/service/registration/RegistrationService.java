@@ -17,7 +17,7 @@ public interface RegistrationService {
 
 	ValidateOtpDto validateOtp(String token, String otp);
 	
-	String resendActivationLink(String email, String token);
+	String resendActivationLink(String email);
 
 	ValidateTokenResponseDto validateToken(String token);
 	

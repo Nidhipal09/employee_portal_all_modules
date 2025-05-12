@@ -742,7 +742,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public String resendActivationLink(String email, String token) {
+    public String resendActivationLink(String email) {
 
         Employee employee = employeeRepository.findByEmail(email);
         String currentTimeStampString   = LocalDateTime.now().toString();
