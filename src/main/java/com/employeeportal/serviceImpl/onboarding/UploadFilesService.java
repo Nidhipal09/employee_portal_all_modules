@@ -1,6 +1,8 @@
 package com.employeeportal.serviceImpl.onboarding;
 
 import com.employeeportal.dto.onboarding.UploadedFiles;
+import com.employeeportal.exception.BadRequestException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,14 @@ public class UploadFilesService {
             // Create directories if they do not exist
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
+            }
+
+            final String duplicateFileName  = originalFilename;
+            boolean isDuplicate = Files.list(uploadPath)
+                    .anyMatch(path -> path.getFileName().toString().startsWith(duplicateFileName + "_"));
+
+            if (isDuplicate) {
+                throw new BadRequestException("File already exists.");
             }
 
             // Resolve full path
