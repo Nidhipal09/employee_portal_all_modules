@@ -75,12 +75,12 @@ public class Employee {
 
 
     public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        this.dateOfBirth = LocalDate.parse(dateOfBirth, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getDateOfBirth() {
         if (dateOfBirth != null) {
-            return dateOfBirth.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            return dateOfBirth.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
         }
         return null;
     }
