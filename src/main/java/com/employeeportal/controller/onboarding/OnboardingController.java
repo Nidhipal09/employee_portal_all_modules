@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +30,7 @@ import com.employeeportal.service.onboarding.OnboardingService;;
 
 @RestController
 @RequestMapping("/onboarding")
+@CrossOrigin(origins = "*")
 public class OnboardingController {
 
     @Autowired
@@ -62,7 +64,7 @@ public class OnboardingController {
         return new ResponseEntity<>(previewResponseDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/notifyAdmin")
+    @PostMapping("/notifyAdmin")
     @PreAuthorize("isAuthenticated()")
     // for preview
     public ResponseEntity<GeneralResponse> notifyAdmin(@RequestParam String email) {
