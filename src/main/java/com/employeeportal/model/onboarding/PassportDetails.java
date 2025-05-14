@@ -32,19 +32,19 @@ public class PassportDetails {
 
     public void setDateOfIssue(String dateOfIssue) {
         this.dateOfIssue = dateOfIssue == null ? null
-                : LocalDate.parse(dateOfIssue, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                : LocalDate.parse(dateOfIssue, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getDateOfIssue() {
-        return (dateOfIssue != null) ? dateOfIssue.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+        return (dateOfIssue != null) ? dateOfIssue.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
     }
 
     public void setValidUpto(String validUpto) {
         this.validUpto = validUpto == null ? null
-                : LocalDate.parse(validUpto, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                : LocalDate.parse(validUpto, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getValidUpto() {
-        return (validUpto != null) ? validUpto.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+        return (validUpto != null) ? validUpto.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
     }
 }

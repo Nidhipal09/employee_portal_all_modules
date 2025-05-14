@@ -48,19 +48,19 @@ public class EmploymentHistory {
 
     public void setEmploymentPeriodFrom(String employmentPeriodFrom) {
         this.employmentPeriodFrom = employmentPeriodFrom == null ? null
-                : LocalDate.parse(employmentPeriodFrom, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                : LocalDate.parse(employmentPeriodFrom, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getEmploymentPeriodFrom() {
-        return (employmentPeriodFrom != null) ? employmentPeriodFrom.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+        return (employmentPeriodFrom != null) ? employmentPeriodFrom.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
     }
 
     public void setEmploymentPeriodTo(String employmentPeriodTo) {
         this.employmentPeriodTo = employmentPeriodTo == null ? null
-                : LocalDate.parse(employmentPeriodTo, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                : LocalDate.parse(employmentPeriodTo, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getEmploymentPeriodTo() {
-        return (employmentPeriodTo != null) ? employmentPeriodTo.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+        return (employmentPeriodTo != null) ? employmentPeriodTo.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
     }
 }

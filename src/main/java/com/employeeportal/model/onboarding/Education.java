@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.*;
 
@@ -34,4 +35,19 @@ public class Education {
     @JoinColumn(name = "employeeId", nullable = false)
     private Employee employee;
 
+    public void setFromDate(String fromDate) {
+        this.fromDate = fromDate == null ? null : LocalDate.parse(fromDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    }
+
+    public void setToDate(String toDate) {
+        this.toDate = toDate == null ? null : LocalDate.parse(toDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    }
+
+    public String getFromDate() {
+        return fromDate == null ? null : fromDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    }
+
+    public String getToDate() {
+        return toDate == null ? null : toDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+    }
 }

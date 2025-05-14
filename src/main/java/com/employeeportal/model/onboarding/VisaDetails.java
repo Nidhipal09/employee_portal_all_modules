@@ -31,11 +31,11 @@ public class VisaDetails {
     
     public void setWorkPermitValidTill(String workPermitValidTill) {
         this.workPermitValidTill = workPermitValidTill == null ? null
-                : LocalDate.parse(workPermitValidTill, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                : LocalDate.parse(workPermitValidTill, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getWorkPermitValidTill() {
-        return (workPermitValidTill != null) ? workPermitValidTill.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+        return (workPermitValidTill != null) ? workPermitValidTill.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
     }
 }
 

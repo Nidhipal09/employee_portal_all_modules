@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class VisaDetailsDTO {
     private String workPermitDetails;
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$", message = "Date must be in the format dd/MM/yyyy")
+    @Pattern(regexp = "^([0-9]{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])$", message = "Date must be in the format yyyy/MM/dd")
     private String workPermitValidTill;
     private String passportCopy;
     private String passportCopyUrl;

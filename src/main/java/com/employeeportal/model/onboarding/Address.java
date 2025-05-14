@@ -33,18 +33,18 @@ public class Address {
     private Employee employee;
 
     public void setStayFrom(String stayFrom) {
-        this.stayFrom = stayFrom == null ? null : LocalDate.parse(stayFrom, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        this.stayFrom = stayFrom == null ? null : LocalDate.parse(stayFrom, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public void setStayTo(String stayTo) {
-        this.stayTo = stayTo == null ? null : LocalDate.parse(stayTo, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        this.stayTo = stayTo == null ? null : LocalDate.parse(stayTo, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getStayFrom() {
-        return stayFrom == null ? null : stayFrom.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        return stayFrom == null ? null : stayFrom.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getStayTo() {
-        return stayTo == null ? null : stayTo.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        return stayTo == null ? null : stayTo.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 }

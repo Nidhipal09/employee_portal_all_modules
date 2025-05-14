@@ -17,12 +17,12 @@ public class PassportDetailsDTO {
     @Pattern(regexp = "^[A-PR-WYa-pr-wy][0-9]{7}$", message = "Passport number must start with a letter followed by 7 digits")
     private String passportNumber;
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$", message = "Date must be in the format dd/MM/yyyy")
+    @Pattern(regexp = "^([0-9]{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])$", message = "Date must be in the format yyyy/MM/dd")
     private String dateOfIssue;
     private String placeOfIssue;
     private String countryOfIssue;
 
-    @Pattern(regexp = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$", message = "Date must be in the format dd/MM/yyyy")
+    @Pattern(regexp = "^([0-9]{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])$", message = "Date must be in the format yyyy/MM/dd")
     private String validUpto;
     private String nationality;
     private String passportUrl;
