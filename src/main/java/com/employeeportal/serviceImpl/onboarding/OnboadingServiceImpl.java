@@ -112,7 +112,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             throw new NotFoundException("Employee not found with email: " + email);
         if (!pageIdentifier.equals("personalDetails") && !pageIdentifier.equals("contact") &&
                 !pageIdentifier.equals("education") && !pageIdentifier.equals("professional") &&
-                !pageIdentifier.equals("other")) {
+                !pageIdentifier.equals("additional")) {
             throw new NotFoundException("Invalid page identifier: " + pageIdentifier);
         }
 
@@ -219,7 +219,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
             fetchOnboardingDetails(onboardingDetails, employeeId, "education");
             fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
-            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "additional");
 
         } else if (pageIdentifier.equals("contact")) {
 
@@ -249,7 +249,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
             fetchOnboardingDetails(onboardingDetails, employeeId, "education");
             fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
-            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "additional");
 
         } else if (pageIdentifier.equals("education")) {
 
@@ -293,7 +293,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
             fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
             fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
-            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "additional");
 
         } else if (pageIdentifier.equals("professional")) {
 
@@ -370,9 +370,9 @@ public class OnboadingServiceImpl implements OnboardingService {
             fetchOnboardingDetails(onboardingDetails, employeeId, "personalDetails");
             fetchOnboardingDetails(onboardingDetails, employeeId, "education");
             fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
-            fetchOnboardingDetails(onboardingDetails, employeeId, "other");
+            fetchOnboardingDetails(onboardingDetails, employeeId, "additional");
 
-        } else if (pageIdentifier.equals("other")) {
+        } else if (pageIdentifier.equals("additional")) {
 
             if (onboardingDetails.getAdditionalDetails() == null) {
                 throw new FieldsMissingException(
@@ -430,7 +430,7 @@ public class OnboadingServiceImpl implements OnboardingService {
             throw new NotFoundException("Employee not found with email: " + email);
         if (!pageIdentifier.equals("personalDetails") && !pageIdentifier.equals("contact") &&
                 !pageIdentifier.equals("education") && !pageIdentifier.equals("professional") &&
-                !pageIdentifier.equals("other")) {
+                !pageIdentifier.equals("additional")) {
             throw new NotFoundException("Invalid page identifier: " + pageIdentifier);
         }
 
@@ -530,7 +530,7 @@ public class OnboadingServiceImpl implements OnboardingService {
                 onboardingDetails.setVisaDetails(visaDetailsDTO);
             }
 
-        } else if (pageIdentifier.equals("other")) {
+        } else if (pageIdentifier.equals("additional")) {
             // Fetch and set Other details
             AdditionalDetails otherDetails = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
             if (otherDetails != null) {
@@ -556,7 +556,7 @@ public class OnboadingServiceImpl implements OnboardingService {
         fetchOnboardingDetails(onboardingDetails, employeeId, "contact");
         fetchOnboardingDetails(onboardingDetails, employeeId, "education");
         fetchOnboardingDetails(onboardingDetails, employeeId, "professional");
-        fetchOnboardingDetails(onboardingDetails, employeeId, "other");
+        fetchOnboardingDetails(onboardingDetails, employeeId, "additional");
 
         String firstName = employee.getFirstName() == null ? "" : employee.getFirstName() + " ";
         String middleName = employee.getMiddleName() == null ? "" : employee.getMiddleName() + " ";
