@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 
 import com.employeeportal.config.EmailConstant;
 import com.employeeportal.dto.onboarding.AadharCardDetailsDTO;
+import com.employeeportal.dto.onboarding.AdditionalDetailsDTO;
 import com.employeeportal.dto.onboarding.AddressDTO;
 import com.employeeportal.dto.onboarding.EducationDTO;
 import com.employeeportal.dto.onboarding.EmployeeDTO;
 import com.employeeportal.dto.onboarding.IdentificationDetailsDTO;
 import com.employeeportal.dto.onboarding.OnboardingResponseDTO;
-import com.employeeportal.dto.onboarding.OtherDetailsDTO;
 import com.employeeportal.dto.onboarding.PanCardDetailsDTO;
 import com.employeeportal.dto.onboarding.PassportDetailsDTO;
 import com.employeeportal.dto.onboarding.PersonalDetailsDTO;
@@ -32,12 +32,12 @@ import com.employeeportal.dto.onboarding.VisaDetailsDTO;
 import com.employeeportal.exception.EncryptionException;
 import com.employeeportal.exception.FieldsMissingException;
 import com.employeeportal.exception.NotFoundException;
+import com.employeeportal.model.onboarding.AdditionalDetails;
 import com.employeeportal.model.onboarding.Address;
 import com.employeeportal.model.onboarding.Education;
 import com.employeeportal.model.onboarding.IdentificationDetails;
 import com.employeeportal.model.onboarding.IdentityType;
 import com.employeeportal.model.onboarding.OnboardingDetails;
-import com.employeeportal.model.onboarding.OtherDetails;
 import com.employeeportal.model.onboarding.PassportDetails;
 import com.employeeportal.model.onboarding.PersonalDetails;
 import com.employeeportal.model.onboarding.EmploymentHistory;
@@ -374,20 +374,20 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("other")) {
 
-            if (onboardingDetails.getOtherDetails() == null) {
+            if (onboardingDetails.getAdditionalDetails() == null) {
                 throw new FieldsMissingException(
                         "Please add all the mandatory fields(Other details) in the Other details form.");
             }
 
-            OtherDetailsDTO otherDetailsDTO = onboardingDetails.getOtherDetails();
+            AdditionalDetailsDTO otherDetailsDTO = onboardingDetails.getAdditionalDetails();
             if (!otherDetailsDTO.isNull()) {
-                OtherDetails otherDetailsFromDB = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
+                AdditionalDetails otherDetailsFromDB = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
                 if (otherDetailsFromDB != null) {
                     otherDetailsFromDB.setHobbiesDeclaration(otherDetailsDTO.getHobbiesDeclaration());
                     otherDetailsFromDB.setIllnessDeclaration(otherDetailsDTO.getIllnessDeclaration());
                     otherDetailsRepository.save(otherDetailsFromDB);
                 } else {
-                    OtherDetails otherDetails = dtoToEntity(otherDetailsDTO, OtherDetails.class);
+                    AdditionalDetails otherDetails = dtoToEntity(otherDetailsDTO, AdditionalDetails.class);
                     otherDetails.setEmployee(employee);
                     otherDetailsRepository.save(otherDetails);
                 }
@@ -532,10 +532,10 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         } else if (pageIdentifier.equals("other")) {
             // Fetch and set Other details
-            OtherDetails otherDetails = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
+            AdditionalDetails otherDetails = otherDetailsRepository.findByEmployeeEmployeeId(employeeId);
             if (otherDetails != null) {
-                OtherDetailsDTO otherDetailsDTO = entityToDto(otherDetails, OtherDetailsDTO.class);
-                onboardingDetails.setOtherDetails(otherDetailsDTO);
+                AdditionalDetailsDTO otherDetailsDTO = entityToDto(otherDetails, AdditionalDetailsDTO.class);
+                onboardingDetails.setAdditionalDetails(otherDetailsDTO);
             }
         }
 
@@ -587,6 +587,7 @@ public class OnboadingServiceImpl implements OnboardingService {
 
         Employee employee = employeeRepository.findByEmail(email);
         employee.setStatus(status);
+        employeeRepository.save(employee);
 
         return "For employee " + email + ", status is updated from PENDING to " + status + " succeesully.";
     }
@@ -597,7 +598,7 @@ public class OnboadingServiceImpl implements OnboardingService {
     @Override
     public GeneralResponse notifyAdmin(String email) {
 
-        emailService.sendEmail(adminEmail, null,
+        emailService.sendEmail(email, null,
                 EmailConstant.VERIFY_EMPLOYEE_DETAILS_SUBJECT, EmailConstant.VERIFY_EMPLOYEE_DETAILS_TEMPLATE, email);
 
         return new GeneralResponse("An email is successfully sent to Admin to verify employee "+ email+" details.");        
