@@ -16,4 +16,8 @@ public class ProfessionalReferencesDTO {
 
     @Pattern(regexp = "\\d{10}", message = "Contact number must be exactly 10 digits")
     private String contactNumber;
+
+    private String relationship;
+
+    private String companyName;
 }

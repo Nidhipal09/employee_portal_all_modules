@@ -42,6 +42,6 @@ public class OnboardingDetails {
     private VisaDetailsDTO visaDetails;
 
     @Valid
-    private OtherDetailsDTO otherDetails;
+    private AdditionalDetailsDTO additionalDetailsDTO;
 
 }

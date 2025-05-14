@@ -14,11 +14,10 @@ public class Relatives {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int relativeId;
     private String name;
-    private String employeeRelativeId;
+    private String relativeEmployeeId;
     private String relationship;
     private String department;
-    private String location;
-    private String remarks;
+    private String designation;
 
     @ManyToOne
     @JsonIgnore

@@ -9,9 +9,8 @@ public class RelativesDTO {
 
     @Pattern(regexp = "^[A-Za-z ]+$", message = "Name must contain only letters and spaces")
     private String name;
-    private String employeeRelativeId;
+    private String relativeEmployeeId;
     private String relationship;
     private String department;
-    private String location;
-    private String remarks;
+    private String designation;
 }

@@ -18,6 +18,8 @@ public class ProfessionalReferences {
     private String designation;
     private String email;
     private String contactNumber;
+    private String relationship;
+    private String companyName;
 
     @ManyToOne
     @JsonIgnore
