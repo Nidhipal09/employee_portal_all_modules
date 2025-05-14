@@ -780,20 +780,21 @@ public class RegistrationServiceImpl implements RegistrationService {
         System.out.println(token+" "+decryptedToken);
         // Split the decrypted token to get email and mobile number
         String[] parts = decryptedToken.split("\\|");
-        if (parts.length != 3) {
-            return new ValidateTokenResponseDto(false, "Invalid token"); // Invalid token format
-        }
 
         String email = parts[0];
         String mobileNumber = parts[1];
         String timeStamp = parts[2];
+
+        if (parts.length != 3) {
+            return new ValidateTokenResponseDto(false, "Invalid token", email); // Invalid token format
+        }
 
         Employee employee = employeeRepository.findByEmail(email);
         String employeeMobileNumber = employee.getMobileNumber();
         String employeeCreatedTimeStamp = employee.getCreatedTimeStamp();
 
         if(!mobileNumber.equals(employeeMobileNumber) || !timeStamp.equals(employeeCreatedTimeStamp)) {
-            return new ValidateTokenResponseDto(false, "Invalid token"); // Invalid token format
+            return new ValidateTokenResponseDto(false, "Invalid token", email); // Invalid token format
         }
 
         System.out.println("hereeeeeeeeeeeeeeeeeeeeeeeee");
@@ -804,11 +805,11 @@ public class RegistrationServiceImpl implements RegistrationService {
         Duration duration = Duration.between(dateTime, employeeDateTime);
         long days = duration.toDays();
         if(days > 1) {
-            return new ValidateTokenResponseDto(false, "Token expired"); // Token expired
+            return new ValidateTokenResponseDto(false, "Token expired", email); // Token expired
         }
 
         // Check if the email and mobile number match the expected values
-        return new ValidateTokenResponseDto(true, "Valid token");
+        return new ValidateTokenResponseDto(true, "Valid token", email);
     }
 
     // @Override
