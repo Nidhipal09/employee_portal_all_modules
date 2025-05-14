@@ -53,7 +53,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().cors().disable().exceptionHandling()
+        http.csrf().disable()
+                .cors().and()    
+                .exceptionHandling()
                 .accessDeniedHandler(new CustomAccessDeniedHandler()).and()
                 .authorizeRequests()
                 .antMatchers("/primaryDetails/create").hasAnyRole("SUPER_ADMIN", "ADMIN")
