@@ -30,7 +30,7 @@ import com.employeeportal.service.onboarding.OnboardingService;;
 
 @RestController
 @RequestMapping("/onboarding")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class OnboardingController {
 
     @Autowired

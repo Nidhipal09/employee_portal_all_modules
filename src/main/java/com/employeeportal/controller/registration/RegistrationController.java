@@ -30,7 +30,7 @@ import com.employeeportal.service.registration.RegistrationService;
 
 @RestController
 @RequestMapping("/primaryDetails")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class RegistrationController {
     private final ResponseUtil responseUtil;
     private final JwtUtil jwtUtil;

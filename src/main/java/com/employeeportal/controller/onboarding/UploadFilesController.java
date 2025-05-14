@@ -21,7 +21,7 @@ import java.io.IOException;
 @RequestMapping("/api/files")
 @Slf4j
 @Validated
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UploadFilesController {
 
     @Autowired
