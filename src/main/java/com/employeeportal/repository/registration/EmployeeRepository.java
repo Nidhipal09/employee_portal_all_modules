@@ -26,8 +26,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
   @Query(value = "SELECT * FROM employee WHERE email = ?1", nativeQuery = true)
   Employee findByEmail(String email);
 
-  @Query(value = "SELECT employee_id FROM employee WHERE mobile_number = ?1", nativeQuery = true)
-  Optional<Integer> findByMobileNumber(String mobileNumber);
+  @Query(value = "SELECT * FROM employee WHERE mobile_number = ?1", nativeQuery = true)
+  Optional<Employee> findByMobileNumber(String mobileNumber);
 
   @Transactional
   @Modifying
