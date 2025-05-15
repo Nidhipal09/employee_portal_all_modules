@@ -1,6 +1,9 @@
 package com.employeeportal.repository.registration;
 
 import com.employeeportal.model.GeneralResponses;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,6 +38,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
   @Query(value = "SELECT password FROM employee WHERE email = :email", nativeQuery = true)
   String findPasswordByEmail(String email);
+
+  Page<Employee> findAllByFirstName(String firstName,  PageRequest pageRequest);
+
+  @Query(value = "SELECT * FROM employee WHERE first_name = :firstName AND middle_name = :middleName", nativeQuery = true)
+  Page<Employee> findAllByFirstAndMiddleName(String firstName, String middleName,  PageRequest pageRequest);
 
   // List<PrimaryDetails> findByRoleName(String roleName);
 

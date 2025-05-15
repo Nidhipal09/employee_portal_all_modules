@@ -5,7 +5,9 @@ import javax.persistence.*;
 import com.employeeportal.model.registration.Employee;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -14,6 +16,8 @@ import java.time.format.DateTimeParseException;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "employee_organization_details")
 public class EmployeeOrganizationDetails {
 
@@ -36,6 +40,8 @@ public class EmployeeOrganizationDetails {
 
     @Column(name = "reporting_hr", length = 100)
     private String reportingHr;
+
+    private String projects;
 
     @Column(name = "joining_date")
     private LocalDate joiningDate;
