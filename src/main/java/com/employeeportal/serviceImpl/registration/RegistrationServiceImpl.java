@@ -795,6 +795,11 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
 
         Employee employee = employeeRepository.findByEmail(email);
+
+        if(employee==null){
+            return new ValidateTokenResponseDto(false, "Invalid token", email);
+        }
+
         String employeeMobileNumber = employee.getMobileNumber();
         String employeeCreatedTimeStamp = employee.getCreatedTimeStamp();
 
