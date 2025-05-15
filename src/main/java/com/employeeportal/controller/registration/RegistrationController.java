@@ -56,9 +56,10 @@ public class RegistrationController {
     public ResponseEntity<ValidateTokenResponseDto> validateToken(@RequestBody TokenDto tokenDto) {
         ValidateTokenResponseDto validateTokenResponseDto = registrationService.validateToken(tokenDto.getToken());
         if(validateTokenResponseDto.isTokenValid()) {
-            return new ResponseEntity<>(validateTokenResponseDto, HttpStatus.UNAUTHORIZED);
-        }
             return new ResponseEntity<>(validateTokenResponseDto, HttpStatus.OK);
+        }
+            return new ResponseEntity<>(validateTokenResponseDto, HttpStatus.UNAUTHORIZED);
+            
     }
 
     @PostMapping("/sendOtp")
