@@ -36,8 +36,8 @@ public class IdentificationDetails {
     public void setIdentificationNumber(String identificationNumber) {
         if (identificationNumber != null) {
             try {
-                String encryptedPassword = EncryptionUtil.encrypt(identificationNumber);
-                this.identificationNumber = encryptedPassword;
+                String encryptedIdentificationNumber = EncryptionUtil.encrypt(identificationNumber);
+                this.identificationNumber = encryptedIdentificationNumber;
             } catch (Exception e) {
                 if(this.identityType == IdentityType.PAN) {
                     throw new EncryptionException("Error encrypting Pan card number");
