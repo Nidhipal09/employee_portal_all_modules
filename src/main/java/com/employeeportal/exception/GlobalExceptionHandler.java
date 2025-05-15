@@ -66,6 +66,14 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
 	}
 
+	@ExceptionHandler(MobileNumberAlreadyExistsException.class)
+	public ResponseEntity<Object> handleMobileNumberAlreadyExistsException(
+		MobileNumberAlreadyExistsException ex, WebRequest request) {
+		String error = "Mobile number already exists";
+		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.value(), error, ex.getMessage());
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+	}
+
 	@ExceptionHandler(NotFoundException.class)
 	public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());

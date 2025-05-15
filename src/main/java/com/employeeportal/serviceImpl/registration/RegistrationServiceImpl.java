@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.employeeportal.exception.AlreadyExistsException;
 import com.employeeportal.exception.EncryptionException;
+import com.employeeportal.exception.MobileNumberAlreadyExistsException;
 import com.employeeportal.exception.NotFoundException;
 import com.employeeportal.model.*;
 import com.employeeportal.model.onboarding.PersonalDetails;
@@ -632,6 +633,10 @@ public class RegistrationServiceImpl implements RegistrationService {
 
         if (personalDetailsRepository.existsByPersonalEmail(employeeRegistrationDTO.getEmail()))
             throw new AlreadyExistsException("Email already exists, kindly use a different one.");
+
+        if(employeeRepository.findByMobileNumber(employeeRegistrationDTO.getMobileNumber()).isPresent())
+            throw new MobileNumberAlreadyExistsException("Employee with this mobile number already exists, kindly use a different one.");    
+        
         System.out.println("1111111111111");
         Employee employee = new Employee();
 
