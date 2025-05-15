@@ -141,7 +141,7 @@ public class UsersServiceImpl implements UsersService {
             int employeeId = employee.getEmployeeId();
 
             EmployeeOrganizationDetails employeeOrganizationDetails = employeeOrganizationDetailsRepository
-                    .findByEmployeeId(employeeId);
+                    .findByEmployeeId(employeeId).get();
             EmployeeReg employeeReg = employeeRegRepository.findByEmployeeId(employeeId);
 
             if (user.getPassword() != null)
