@@ -120,7 +120,7 @@ public class LoginServiceImpl implements LoginService {
         // Fetch role name from Role table using role ID from
         // EmployeeOrganizationDetails
         EmployeeOrganizationDetails orgDetails = employeeOrganizationDetailsRepository
-                .findByEmployeeId(employeeReg.getEmployee().getEmployeeId());
+                .findByEmployeeId(employeeReg.getEmployee().getEmployeeId()).get();
         Role role = roleRepository.findById(orgDetails.getRole().getRoleId()).get();
         loginResponse.setRoleName(role.getRoleName());
 
